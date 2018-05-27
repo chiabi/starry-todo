@@ -4,11 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>중간 프로젝트 템플릿</title>
+  <title>Starry ToDo</title>
   <link rel="stylesheet" href="./index.scss">
 </head>
 <body>
-  <h1>중간 프로젝트 템플릿</h1>
-  <script src="./index.js"></script>
+  <div class="root"></div>
+  <template class="index">
+    
+  </template>
+  <template class="login">
+    <div class="content login">
+      <h1 class="login_title"></h1>
+      <form class="login-form">
+        <div class="field">
+          <label for="username" class="label">Name</label>
+          <div class="control">
+            <input name="username" id="username" class="input" type="text" placeholder="e.g fds">
+          </div>
+        </div>
+        <div class="field">
+          <label for="password" class="label">Password</label>
+          <div class="control">
+            <input name="password" id="password" class="input" type="email">
+          </div>
+        </div>
+        <div class="field is-grouped is-grouped-centered">
+          <div class="control">
+            <button class="button is-primary">Submit</button>
+          </div>
+          <div class="control">
+            <button class="button is-text">Sign up</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </template>
 </body>
 </html>
