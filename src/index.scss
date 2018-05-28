@@ -13,6 +13,19 @@ body {
     font-family: $main-font;
   }
 }
-.task-sort__body {
-  display: none;
+// .task-sort__body {
+//   display: none;
+// }
+.project-write-form {
+  .input {
+    display: none;
+  }
+  &--writing {
+    .input {
+      display: block;
+    }
+    .button {
+      display: none;
+    }
+  }
 }

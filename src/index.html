@@ -78,87 +78,83 @@
       <h1 class="header__logo">Starry <span>todo</span></h1>
       <button class="header__btn-logout">Log out</button>
     </div>
-    <div class="contents">
-      <div class="projects">
+    <div class="contents"></div>
+  </template>
 
-        <div class="projects-utils">
-          <form class="projects-form">
-            <div class="field has-addons projects-search">
-              <div class="control">
-                <input type="text" class="input" placeholder="search task name" aria-label="search task form">
-              </div>
-              <div class="control">
-                <button class="button is-primary">search</button>
-              </div>
+  <template id="project-content">
+    <div class="project-content">
+
+      <div class="project-utils">
+        <form class="projects-search-form">
+          <div class="field has-addons projects-search">
+            <div class="control">
+              <input type="text" class="input" placeholder="search task name" aria-label="search task form">
             </div>
-          </form>
-          <div class="task-sort">
-            <button class="task-sort__btn-open">정렬</button>
-            <div class="task-sort__body">
-              <div class="control">
-                <label class="radio" for="incompleteTasks">
-                  <input type="radio" name="tasksort" id="incompleteTasks" checked> incomplete Tasks
-                </label>
-              </div>
-              <div class="control">
-                <label class="radio" for="completeTasks">
-                  <input type="radio" name="tasksort" id="completeTasks"> completed Tasks
-                </label>
-              </div>
-              <div class="control">
-                <label class="radio" for="allTasks">
-                  <input type="radio" name="tasksort" id="allTasks"> All Tasks
-                </label>
-              </div>
+            <div class="control">
+              <button class="button is-primary">search</button>
+            </div>
+          </div>
+        </form>
+        <div class="task-sort">
+          <button class="task-sort__btn-open">정렬</button>
+          <div class="task-sort__body">
+            <div class="control">
+              <label class="radio" for="incompleteTasks">
+                <input type="radio" name="tasksort" id="incompleteTasks" checked> incomplete Tasks
+              </label>
+            </div>
+            <div class="control">
+              <label class="radio" for="completeTasks">
+                <input type="radio" name="tasksort" id="completeTasks"> completed Tasks
+              </label>
+            </div>
+            <div class="control">
+              <label class="radio" for="allTasks">
+                <input type="radio" name="tasksort" id="allTasks"> All Tasks
+              </label>
             </div>
           </div>
         </div>
-
-        <button class="button icon projects__btn-add-project" title="add your projects">
-          <i class="fas fa-plus-circle"></i>
-        </button>
-
-        <section class="projects-list">
-          
-          <div class="box content project-item">
-            <h2 class="project-item__title">프로젝트 이름을 적자</h2>
-            <button class="button icon project-item__btn-add-task" title="add your tasks">
-              <i class="fas fa-plus-circle"></i>
-            </button>
-
-            <div class="task-list">
-
-              <div class="box content task-item">
-                <h3 class="task-item__title">작업 이름을 적자</h3>
-                <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
-                <button class="task-item__btn-delete">삭제</button>
-                <p class="task-item__date">date: <span class="start">2018.05.28</span> ~ <span class="end">2018.05.28</span></p>
-                <div class="constrols task-item__label">
-                  <span class="tag is-danger">라벨</span>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        </section>
-
       </div>
-    </div>
-  </template>
 
-  <template id="projects">
-    <div class="projects">
-      
+      <form class="project-write-form">
+        <button class="button projects__btn-add-project">
+          <span class="icon"><i class="fas fa-plus"></i></span>
+          <span>add your project</span>
+        </button>
+        <input type="text" name="title" class="input project-write-form__input" placeholder="new project" aria-label="project title">
+      </form>
+
+      <section class="project-list"></section>
     </div>
   </template>
 
   <template id="project-item">
-    <button></button>
-    <div class="project-item">
-
+    <div class="box content project-item">
+      <h2 class="project-item__title"></h2>
+      <button class="delete project-item__btn-delete" title="delete project"></button>
+      <div class="control">
+        <button class="button project-item__btn-add-task">
+          <span class="icon"><i class="fas fa-plus"></i></span>
+          <span>add your task</span>
+        </button>
+      </div>
+      <div class="task-list"></div>
     </div>
   </template>
+
+  <template id="task-item">
+    <div class="box content task-item">
+      <h3 class="task-item__title"></h3>
+      <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
+      <button class="delete task-item__btn-delete" title="delete task"></button>
+      <p class="task-item__date"><span class="start"></span> ~ <span class="end"></span></p>
+      <div class="constrols">
+        <span class="tag task-item__label"></span>
+      </div>
+    </div>
+  </template>
+
   <script src="./index.js"></script>
 </body>
 </html>
