@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Starry ToDo</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   <link rel="stylesheet" href="./index.scss">
 </head>
 <body>
@@ -14,6 +15,7 @@
     <div class="content sign-page">
       <h1 class="sign__title">Log in</h1>
       <form class="sign-form login-form">
+        <div class="sign-form__notification"></div>
         <div class="field">
           <label for="username" class="label">Name</label>
           <div class="control">
@@ -38,14 +40,11 @@
     </div>
   </template>
 
-  <template id="notification">
-    <div class="notification"></div>
-  </template>
-
   <template id="register">
     <div class="content sign-page">
       <h1 class="sign__title">Create new account</h1>
       <form class="sign-form register-form">
+        <div class="sign-form__notification"></div>
         <div class="field">
           <label for="username" class="label">Name</label>
           <div class="control">
@@ -70,14 +69,94 @@
     </div>
   </template>
 
-  <template id="index">
-    <div class="">인덱스</div>
+  <template id="notification">
+    <div class="notification"></div>
   </template>
 
-  <template id="header">
+  <template id="index">
     <div class="header">
-      <h1>Starry <span>todo</span></h1>
+      <h1 class="header__logo">Starry <span>todo</span></h1>
       <button class="header__btn-logout">Log out</button>
+    </div>
+    <div class="contents">
+      <div class="projects">
+
+        <div class="projects-utils">
+          <form class="projects-form">
+            <div class="field has-addons projects-search">
+              <div class="control">
+                <input type="text" class="input" placeholder="search task name" aria-label="search task form">
+              </div>
+              <div class="control">
+                <button class="button is-primary">search</button>
+              </div>
+            </div>
+          </form>
+          <div class="task-sort">
+            <button class="task-sort__btn-open">정렬</button>
+            <div class="task-sort__body">
+              <div class="control">
+                <label class="radio" for="incompleteTasks">
+                  <input type="radio" name="tasksort" id="incompleteTasks" checked> incomplete Tasks
+                </label>
+              </div>
+              <div class="control">
+                <label class="radio" for="completeTasks">
+                  <input type="radio" name="tasksort" id="completeTasks"> completed Tasks
+                </label>
+              </div>
+              <div class="control">
+                <label class="radio" for="allTasks">
+                  <input type="radio" name="tasksort" id="allTasks"> All Tasks
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="button icon projects__btn-add-project" title="add your projects">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+
+        <section class="projects-list">
+          
+          <div class="box content project-item">
+            <h2 class="project-item__title">프로젝트 이름을 적자</h2>
+            <button class="button icon project-item__btn-add-task" title="add your tasks">
+              <i class="fas fa-plus-circle"></i>
+            </button>
+
+            <div class="task-list">
+
+              <div class="box content task-item">
+                <h3 class="task-item__title">작업 이름을 적자</h3>
+                <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
+                <button class="task-item__btn-delete">삭제</button>
+                <p class="task-item__date">date: <span class="start">2018.05.28</span> ~ <span class="end">2018.05.28</span></p>
+                <div class="constrols task-item__label">
+                  <span class="tag is-danger">라벨</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </template>
+
+  <template id="projects">
+    <div class="projects">
+      
+    </div>
+  </template>
+
+  <template id="project-item">
+    <button></button>
+    <div class="project-item">
+
     </div>
   </template>
   <script src="./index.js"></script>

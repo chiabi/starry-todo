@@ -1,2 +1,18 @@
+@import url('https://fonts.googleapis.com/css?family=Chela+One|Nanum+Gothic');
 @import '../node_modules/bulma';
 
+$main-font: 'Chela One', cursive;
+body {
+  font-family: 'Nanum Gothic', sans-serif;
+}
+.header {
+  display: flex;
+  background-color: $primary;
+  color: #fff;
+  &__logo {
+    font-family: $main-font;
+  }
+}
+.task-sort__body {
+  display: none;
+}

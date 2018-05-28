@@ -7,13 +7,12 @@ const root = document.querySelector('.root')
 const templates = {
   login: document.querySelector('#login').content,
   register: document.querySelector('#register').content,
-  header: document.querySelector('#header').content,
   notification: document.querySelector('#notification').content,
   index: document.querySelector('#index').content,
 }
 
-function render(fragment, parent = root) {
-  if(parent === root) {
+function render(fragment, parent = root, clear = true) {
+  if(clear) {
     parent.textContent = ''
   }
   parent.appendChild(fragment)
@@ -29,7 +28,16 @@ function logout() {
   delete starryAPI.defaults.headers['Authorization']
 }
 
-function signSubmit(path, {form, btnSubmit}) {
+// notification
+function notification(message, parentNode, stateClass) {
+  const fragment = document.importNode(templates.notification, true);
+  const notification = fragment.querySelector('.notification');
+  notification.textContent = message
+  notification.classList.add(stateClass)
+  render(fragment, parentNode)
+}
+
+function signSubmit(path, {form, btnSubmit}, failMessage) {
   form.addEventListener('submit', async e => {
     e.preventDefault();
     btnSubmit.classList.add('is-loading')
@@ -37,6 +45,7 @@ function signSubmit(path, {form, btnSubmit}) {
       username: e.target.elements.username.value,
       password: e.target.elements.password.value,
     }
+    const notificationEl = form.querySelector('.sign-form__notification');
     try {
       const res = await starryAPI.post(path, payload)
       login(res.data.token)
@@ -45,9 +54,10 @@ function signSubmit(path, {form, btnSubmit}) {
       const status = e.response ? e.response.status : 500
       btnSubmit.classList.remove('is-loading')
       if (status >= 400 && status < 500) {
-        alert('The username or password is not correct')
+        notification(failMessage, notificationEl, 'is-warning')
       } else {
-        alert('error')
+        const message = 'sorry, networking error. please, try again later'
+        notification(meassge, notificationEl, 'is-primary')
       }
     }
   })
@@ -55,7 +65,7 @@ function signSubmit(path, {form, btnSubmit}) {
 
 function signLink(btnLink, func) {
   btnLink.addEventListener('click', e => {
-    e.preventDefault();
+    e.preventDefault()
     func()
   })
 }
@@ -68,7 +78,8 @@ async function loginPage() {
     btnSubmit: fragment.querySelector('.login-form__btn-submit'),
   }
   const btnLink = fragment.querySelector('.login-form__btn-link')
-  signSubmit('users/login', signForm)
+  const message = 'The username or password is not correct'
+  signSubmit('users/login', signForm, message)
   signLink(btnLink, registerPage)
   render(fragment)
 }
@@ -81,26 +92,20 @@ async function registerPage() {
     btnSubmit: fragment.querySelector('.register-form__btn-submit'),
   }
   const btnLink = fragment.querySelector('.register-form__btn-link')
-  signSubmit('users/register', signForm)
+  const message = 'Username already exists'
+  signSubmit('users/register', signForm, message)
   signLink(btnLink, loginPage)
   render(fragment)
-}
-
-// layout header
-async function layoutHeader(parent) {
-  const fragment = document.importNode(templates.header, true)
-  const btnLogout = fragment.querySelector('.header__btn-logout');
-  btnLogout.addEventListener('click', e => {
-    logout()
-    loginPage()
-  })
-  render(fragment, parent)
 }
 
 // indexPage
 async function indexPage() {
   const fragment = document.importNode(templates.index, true)
-  layoutHeader(fragment)
+  const btnLogout = fragment.querySelector('.header__btn-logout');
+  btnLogout.addEventListener('click', e => {
+    logout()
+    loginPage()
+  })
   render(fragment)
 }
 
