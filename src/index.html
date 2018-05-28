@@ -9,35 +9,77 @@
 </head>
 <body>
   <div class="root"></div>
-  <template class="index">
-    
-  </template>
-  <template class="login">
-    <div class="content login">
-      <h1 class="login_title"></h1>
-      <form class="login-form">
+
+  <template id="login">
+    <div class="content sign-page">
+      <h1 class="sign__title">Log in</h1>
+      <form class="sign-form login-form">
         <div class="field">
           <label for="username" class="label">Name</label>
           <div class="control">
-            <input name="username" id="username" class="input" type="text" placeholder="e.g fds">
+            <input name="username" id="username" class="input" type="text" placeholder="user name" required>
           </div>
         </div>
         <div class="field">
           <label for="password" class="label">Password</label>
           <div class="control">
-            <input name="password" id="password" class="input" type="email">
+            <input name="password" id="password" class="input" type="password" placeholder="password" required>
           </div>
         </div>
-        <div class="field is-grouped is-grouped-centered">
+        <div class="field">
           <div class="control">
-            <button class="button is-primary">Submit</button>
+            <button class="button is-primary login-form__btn-submit">Submit</button>
           </div>
-          <div class="control">
-            <button class="button is-text">Sign up</button>
-          </div>
+        </div>
+        <div class="login-form__link">
+            Create an account. <button class="button is-text login-form__btn-link">Sign up</button>
         </div>
       </form>
     </div>
   </template>
+
+  <template id="notification">
+    <div class="notification"></div>
+  </template>
+
+  <template id="register">
+    <div class="content sign-page">
+      <h1 class="sign__title">Create new account</h1>
+      <form class="sign-form register-form">
+        <div class="field">
+          <label for="username" class="label">Name</label>
+          <div class="control">
+            <input name="username" id="username" class="input" type="text" placeholder="user name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="password" class="label">Password</label>
+          <div class="control">
+            <input name="password" id="password" class="input" type="password" placeholder="password" required>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button class="button is-primary register-form__btn-submit">Submit</button>
+          </div>
+        </div>
+        <div class="login-form__link">
+            Sign in to your account. <button class="button is-text register-form__btn-link">Log in</button>
+        </div>
+      </form>
+    </div>
+  </template>
+
+  <template id="index">
+    <div class="">인덱스</div>
+  </template>
+
+  <template id="header">
+    <div class="header">
+      <h1>Starry <span>todo</span></h1>
+      <button class="header__btn-logout">Log out</button>
+    </div>
+  </template>
+  <script src="./index.js"></script>
 </body>
 </html>
