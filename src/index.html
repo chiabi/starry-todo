@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="root"></div>
-  
+
   <template id="loading">
     <div class="loading">
       <img src="https://cdn.glitch.com/80cbaeaf-3c2e-4990-951e-e04605def4f6%2Fspinner-primary.svg?1527581114776" alt="Loading...">
@@ -157,20 +157,23 @@
       <h3 class="task-item__title"></h3>
       <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
       <button class="delete task-item__btn-delete" title="delete task"></button>
-      <p class="task-item__date"><span class="start"></span> ~ <span class="due"></span></p>
-      <div class="constrols">
-        <span class="tag task-item__label"></span>
+      <p class="task-item__date"><span class="start"></span> <span class="due"></span></p>
+      <div class="constrols task-item__label">
       </div>
     </div>
   </template>
+  
+  <template id="task-label">
+    <span class="tag"></span>
+  </template>
 
   <template id="task-write-modal">
-    <div class="modal" style="display: block">
+    <div class="modal task-write-modal">
       <div class="modal-background"></div>
-      <div class="modal-card task-write-modal">
+      <div class="modal-card task-write-modal__card">
         <header class="modal-card-head">
           <p class="modal-card-title">New task</p>
-          <button class="delete" aria-label="close"></button>
+          <button class="delete task-write-modal__btn-close" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
           <form class="task-form">
@@ -183,13 +186,13 @@
             <label class="label">Set term</label>
             <div class="field set-term">
               <div class="control has-icons-left ">
-                <input name="start-date" type="text" class="input" aria-label="start date" placeholder="2018.05.29">
+                <input name="startDate" type="text" class="input" aria-label="start date" placeholder="2018.05.29">
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
               </div>
               <div class="control has-icons-left ">
-                <input name="due-date" type="text" class="input" aria-label="due date" placeholder="2018.05.29">
+                <input name="dueDate" type="text" class="input" aria-label="due date" placeholder="2018.05.29">
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
@@ -266,8 +269,8 @@
           </form>
         </section>
         <section class="modal-card-foot">
-          <button class="button is-primary">save</button>
-          <button class="button">cancel</button>
+          <button class="button is-primary task-write-modal__btn-save">save</button>
+          <button class="button task-write-modal__btn-cancel">cancel</button>
         </section>
       </div>
     </div>

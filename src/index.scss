@@ -44,7 +44,6 @@ $main-font: 'Chela One', cursive;
 }
 
 .project-item {
-  transform-origin: 0 0;
   &--delete {
     display: none;
   }
@@ -81,12 +80,23 @@ $main-font: 'Chela One', cursive;
   }
 }
 
+.task-item {
+  &--delete {
+    display: none;
+  }
+}
+
+.task-write-modal {
+  display: flex;
+}
+
 .set-term {
   display: flex;
   .control {
     margin-right: 0.5em;
   }
 }
+
 .label-color-select {
   position: relative;
   .tag {
