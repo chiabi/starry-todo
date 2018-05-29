@@ -1,4 +1,5 @@
 import axios from 'axios'
+import moment from 'moment'
 
 const starryAPI = axios.create({
   baseURL: process.env.API_URL
@@ -8,10 +9,12 @@ const templates = {
   login: document.querySelector('#login').content,
   register: document.querySelector('#register').content,
   notification: document.querySelector('#notification').content,
+  loading: document.querySelector('#loading').content,
   index: document.querySelector('#index').content,
   projectContent: document.querySelector('#project-content').content,
   projectItem: document.querySelector('#project-item').content,
   taskItem: document.querySelector('#task-item').content,
+  taskModal: document.querySelector('#task-write-modal').content,
 }
 
 function render(fragment, parent = root, clear = true) {
@@ -101,6 +104,13 @@ async function registerPage() {
   render(fragment)
 }
 
+async function withLoading(promise) {
+  rootEl.classList.add('root--loading');
+  const value = await promise;
+  rootEl.classList.remove('root--loading');
+  return value;
+}
+
 // indexPage
 async function indexPage() {
   const fragment = document.importNode(templates.index, true)
@@ -111,7 +121,6 @@ async function indexPage() {
     logout()
     loginPage()
   })
-
   projectContent(contentEl)
   render(fragment)
 }
@@ -229,7 +238,7 @@ async function projectItem(parentEl, {title, id}) {
 
   // POST - task item
   btnAddEl.addEventListener('click', e => {
-    
+
   })
   
   render(fragment, parentEl, false)
@@ -248,13 +257,10 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete}
   }
   titleEl.textContent = title;
   dateEl.querySelector('.start').textContent = startDate
-  dateEl.querySelector('.end').textContent = dueDate
+  dateEl.querySelector('.due').textContent = dueDate
 
   const res = await starryAPI.get(`/labels/${labelId}`)
   switch (res.data.color) {
-    case 'red': 
-      labelEl.classList.add('is-danger')
-      break
     case 'yellow':
       labelEl.classList.add('is-warning')
       break
@@ -264,9 +270,14 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete}
     case 'blue':
       lableEl.classList.add('is-info')
       break
-    default: 
+    case 'purple': 
       labelEl.classList.add('is-primary')
       break
+    case 'no':
+      labelEl.calssList.add('no-color')
+      break
+    default :
+      labelEl.classList.add('is-danger')
   }
   labelEl.textContent = res.data.body
 

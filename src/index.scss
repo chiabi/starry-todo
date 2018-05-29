@@ -69,3 +69,77 @@ body {
     }
   }
 }
+
+.set-term {
+  display: flex;
+  .control {
+    margin-right: 0.5em;
+  }
+}
+.label-color-select {
+  position: relative;
+  .tag {
+    margin: 0 0.2em;
+    width: 36px;
+    height: 36px;
+    &.no-color {
+      border: 1px solid $grey-lighter;
+    }
+  }
+  &__btn {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  &__list {
+    padding: 0.5em 0.3em;
+    display: none;
+    border-radius: $radius;
+    border: 1px solid $grey-lighter;
+    background-color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-0.5em, -50%);
+    .label-color-select--open & {
+      display: flex;
+    }
+  }
+  &__item {
+    position: relative;
+    input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      &:checked + label i {
+        display: block
+      }
+    }
+    label {
+      vertical-align: top;
+      i {
+        display: none;
+      }
+    }
+  }
+}
+
+.label-title {
+  &__list {
+    // display: none;
+    padding: 0.5em;
+    margin-top: $radius * -1;
+    border: 1px solid $grey-lighter;
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+    background: #fff;
+    .tag {
+      cursor: pointer;
+    }
+    .label-title--open & {
+      display: block;
+    }
+  }
+}

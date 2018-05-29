@@ -10,7 +10,11 @@
 </head>
 <body>
   <div class="root"></div>
-
+  <!-- <template id="loading">
+    <div class="loading">
+      <img src="https://cdn.glitch.com/80cbaeaf-3c2e-4990-951e-e04605def4f6%2Fspinner-primary.svg?1527581114776" alt="Loading...">
+    </div>
+  </template> -->
   <template id="login">
     <div class="content sign-page">
       <h1 class="sign__title">Log in</h1>
@@ -122,7 +126,7 @@
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span>add your project</span>
         </button>
-        <input type="text" name="title" class="input project-write-form__input" placeholder="new project" aria-label="project title">
+        <input type="text" name="title" class="input project-write-form__input" placeholder="new project" aria-label="project title" autocomplete="off">
       </form>
 
       <section class="project-list"></section>
@@ -151,21 +155,121 @@
       <h3 class="task-item__title"></h3>
       <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
       <button class="delete task-item__btn-delete" title="delete task"></button>
-      <p class="task-item__date"><span class="start"></span> ~ <span class="end"></span></p>
+      <p class="task-item__date"><span class="start"></span> ~ <span class="due"></span></p>
       <div class="constrols">
         <span class="tag task-item__label"></span>
       </div>
     </div>
   </template>
-  <div class="task-content">
-    <form class="task-form">
-      <div class="field">
-        <div class="control">
-          
-        </div>
+
+  <template id="task-write-modal">
+    <div class="modal" style="display: block">
+      <div class="modal-background"></div>
+      <div class="modal-card task-write-modal">
+        <header class="modal-card-head">
+          <p class="modal-card-title">New task</p>
+          <button class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+          <form class="task-form">
+            <div class="field">
+              <label for="task-title" class="label">Title</label>
+              <div class="control">
+                <input name="title" type="text" class="input" id="task-title" placeholder="task title" autocomplete="off" required/>
+              </div>
+            </div>
+            <label class="label">Set term</label>
+            <div class="field set-term">
+              <div class="control has-icons-left ">
+                <input name="start-date" type="text" class="input" aria-label="start date" placeholder="2018.05.29">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-clock"></i>
+                </span>
+              </div>
+              <div class="control has-icons-left ">
+                <input name="due-date" type="text" class="input" aria-label="due date" placeholder="2018.05.29">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-clock"></i>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="task-body" class="label">Description</label>
+              <div class="control">
+                <textarea name="body" class="textarea" id="task-body" placeholder="task description"></textarea>
+              </div>
+            </div>
+            <div class="label">
+              <span>label</span>
+              <span class="icon">
+                <i class="fa fa-tag"></i>
+              </span>
+            </div>
+            <div class="field has-addons has-addons-fullwidth">
+              <div class="label-color-select">
+                <button class="label-color-select__btn">
+                  <span class="tag is-danger">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </button>
+                <div class="label-color-select__list">
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-no-color" value="no" checked/>
+                    <label for="label-no-color" class="tag no-color">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-red" value="red"/>
+                    <label for="label-red" class="tag is-danger">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-yellow" value="yellow"/>
+                    <label for="label-yellow" class="tag is-warning">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-green" value="green"/>
+                    <label for="label-green" class="tag is-success">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-blue" value="blue"/>
+                    <label for="label-blue" class="tag is-info">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                  <div class="label-color-select__item">
+                    <input name="label-color" type="radio" id="label-purple" value="purple"/>
+                    <label for="label-purple" class="tag is-primary">
+                      <i class="fas fa-check"></i>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="control label-title">
+                <input type="text" class="input" name="label-title" placeholder="label name" autocomplete="off">
+                <div class="label-title__list">
+                  <span class="tag task-item__label is-danger">label</span>
+                  <span class="tag task-item__label is-danger">label</span>
+                  <span class="tag task-item__label is-danger">label</span>
+                  <span class="tag task-item__label is-danger">label</span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+        <section class="modal-card-foot">
+          <button class="button is-primary">save</button>
+          <button class="button">cancel</button>
+        </section>
       </div>
-    </form>
-  </div>
+    </div>
+  </template>
 
   <script src="./index.js"></script>
 </body>
