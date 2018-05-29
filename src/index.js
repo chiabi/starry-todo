@@ -116,6 +116,24 @@ async function indexPage() {
   render(fragment)
 }
 
+
+function projectNotification(message = `Network error please try again later`) {
+  const notificationEl = document.querySelector('.project-notification')
+  notification(message, notificationEl, 'is-warning')
+  setTimeout(() => {
+    notificationEl.textContent = ''
+  }, 3000)
+}
+
+function inputCompleteBlur(el) {
+  el.addEventListener('keydown', e => {
+    if(e.keyCode === 13) {
+      e.preventDefault()
+      el.blur()
+    }
+  })
+}
+
 // project content
 async function projectContent(parentEl) {
   const fragment = document.importNode(templates.projectContent, true)
@@ -130,35 +148,31 @@ async function projectContent(parentEl) {
     inputEl.focus()
   })
 
-  async function addProject(el) {
-    const payload = {
-      title: el.value
-    }
-    try {
-      const res = await starryAPI.post('/projects', payload)
-      projectItem(listEl, res.data)
-      formEl.classList.remove('project-write-form--writing')
-      inputEl.value = ''
-    } catch (e) {
-      alert('전송실패!')
-    }
-  }
-  
-  // inputEl.addEventListener('blur', async e => {
-  //   e.preventDefault()
-  //   addProject(e.target)
-  // })
-
-  inputEl.addEventListener('keyup', async e => {
+  // POST - project item
+  inputCompleteBlur(inputEl)
+  inputEl.addEventListener('blur', async e => {
     e.preventDefault()
-    if(e.keyCode === 13) {
-      addProject(e.target)
+    const payload = {
+      title: e.target.value
+    }
+    if(payload.title) {
+      try {
+        const res = await starryAPI.post('/projects', payload)
+        projectItem(listEl, res.data)
+        formEl.classList.remove('project-write-form--writing')
+        inputEl.value = ''
+      } catch (e) {
+        projectNotification()
+      }
+    } else {
+      formEl.classList.remove('project-write-form--writing')
     }
   })
 
   const res = await starryAPI.get('/projects')
   for (const data of res.data) {
-    projectItem(listEl, data)
+    // 여기에 await 붙이니까 새로고침시 리스트 뒤죽박죽되는 문제 해결되었음
+    await projectItem(listEl, data)
   }
   render(fragment, parentEl, false)
 }
@@ -168,15 +182,54 @@ async function projectItem(parentEl, {title, id}) {
   const fragment = document.importNode(templates.projectItem, true)
   const listEl = fragment.querySelector('.task-list')
   const btnDeleteEl = fragment.querySelector('.project-item__btn-delete')
+  const btnAddEl = fragment.querySelector('.project-item__btn-add-task')
 
-  fragment.querySelector('.project-item__title').textContent = title
+  const titleEl = fragment.querySelector('.project-item__title');
+  const titleShadowEl = titleEl.querySelector('.project-item__title-shadow')
+  const titleInputEl = titleEl.querySelector('.project-item__title-input')
+
+  titleShadowEl.textContent = title
+  titleInputEl.value = title
+
+  // GET - render task item
   const res = await starryAPI.get(`/projects/${id}/tasks`)
   for (const data of res.data) {
     taskItem(listEl, data)
   }
+
+  // DELETE - project item
   btnDeleteEl.addEventListener('click', async e => {
-    await starryAPI.delete(`/projects/${id}`)
-    indexPage()
+    const removeEl = btnDeleteEl.closest('.project-item')
+    removeEl.classList.add('project-item--delete')
+    try {
+      await starryAPI.delete(`/projects/${id}`)
+      removeEl.remove()
+    } catch(e) {
+      projectNotification()
+      removeEl.classList.remove('project-item--delete')
+    }
+  })
+
+  // PATCH - project item
+  titleInputEl.addEventListener('keydown', e => {
+    titleShadowEl.textContent = e.target.value
+  })
+  inputCompleteBlur(titleInputEl)
+  titleInputEl.addEventListener('blur', async e => {
+    const payload = {
+      title: e.target.value
+    }
+    try {
+      await starryAPI.patch(`/projects/${id}`, payload)
+    } catch(e) {
+      titleShadowEl.textContent = title
+      titleInputEl.value = title
+    }
+  })
+
+  // POST - task item
+  btnAddEl.addEventListener('click', e => {
+    
   })
   
   render(fragment, parentEl, false)

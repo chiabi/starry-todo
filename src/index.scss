@@ -3,7 +3,7 @@
 
 $main-font: 'Chela One', cursive;
 body {
-  font-family: 'Nanum Gothic', sans-serif;
+  // font-family: 'Nanum Gothic', sans-serif;
 }
 .header {
   display: flex;
@@ -26,6 +26,46 @@ body {
     }
     .button {
       display: none;
+    }
+  }
+}
+
+.project-item {
+  transform-origin: 0 0;
+  transition: transform 0.4s, opacity 0.2s;
+  &--delete {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  &__title {
+    position: relative;
+    &-shadow {
+      width: 100%;
+      word-break: break-word;
+    }
+    &-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      resize: none;
+      border: 1px solid transparent;
+      &:not(:focus) {
+        cursor: pointer;
+      }
+      &:focus {
+        outline: none;
+        border-radius: 5px;
+        border-color: rgba($primary, 0.3);
+      }
+    }
+    &-input, &-shadow {
+      box-sizing: border-box;
+      padding: 0.2em;
+      font-size: 1.8em;
+      font-weight: bold;
     }
   }
 }

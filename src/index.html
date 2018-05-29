@@ -83,7 +83,7 @@
 
   <template id="project-content">
     <div class="project-content">
-
+      <div class="project-notification"></div>
       <div class="project-utils">
         <form class="projects-search-form">
           <div class="field has-addons projects-search">
@@ -131,7 +131,10 @@
 
   <template id="project-item">
     <div class="box content project-item">
-      <h2 class="project-item__title"></h2>
+      <div class="project-item__title">
+        <div class="project-item__title-shadow"></div>
+        <textarea class="project-item__title-input" spellcheck="false"></textarea>
+      </div>
       <button class="delete project-item__btn-delete" title="delete project"></button>
       <div class="control">
         <button class="button project-item__btn-add-task">
@@ -154,6 +157,15 @@
       </div>
     </div>
   </template>
+  <div class="task-content">
+    <form class="task-form">
+      <div class="field">
+        <div class="control">
+          
+        </div>
+      </div>
+    </form>
+  </div>
 
   <script src="./index.js"></script>
 </body>
