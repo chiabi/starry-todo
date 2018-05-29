@@ -104,11 +104,14 @@ async function registerPage() {
   render(fragment)
 }
 
-async function withLoading(promise) {
-  rootEl.classList.add('root--loading');
-  const value = await promise;
-  rootEl.classList.remove('root--loading');
-  return value;
+// loading
+async function withlLoading(promise) {
+  const fragment = document.importNode(templates.loading, true)
+  const el = fragment.querySelector('.loading')
+  render(fragment, document.body, false)
+  const value = await promise
+  el.remove()
+  return value
 }
 
 // indexPage
@@ -121,7 +124,7 @@ async function indexPage() {
     logout()
     loginPage()
   })
-  projectContent(contentEl)
+  withlLoading(projectContent(contentEl))
   render(fragment)
 }
 
@@ -259,6 +262,7 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete}
   dateEl.querySelector('.start').textContent = startDate
   dateEl.querySelector('.due').textContent = dueDate
 
+  // GET - label 
   const res = await starryAPI.get(`/labels/${labelId}`)
   switch (res.data.color) {
     case 'yellow':
