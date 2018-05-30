@@ -151,9 +151,9 @@ $main-font: 'Chela One', cursive;
 .task-form__label {
   align-items: flex-start
 }
-.label-title {
+.label-body {
   &__list {
-    // display: none;
+    display: none;
     padding: 0.5em;
     max-height: 8em;
     overflow-y: auto;
@@ -165,7 +165,7 @@ $main-font: 'Chela One', cursive;
     .tag {
       cursor: pointer;
     }
-    .label-title--open & {
+    .label-body--open & {
       display: block;
     }
   }

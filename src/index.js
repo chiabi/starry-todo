@@ -261,6 +261,34 @@ async function projectItem(parentEl, {title, id}) {
   render(fragment, parentEl, false)
 }
 
+async function labelItem(parentEl, {color, body}, func) {
+  const fragment = deepCopyFragment(templates.taskLabel)
+  const label = fragment.querySelector('.tag')
+
+  switch (color) {
+    case 'yellow':
+      label.classList.add('is-warning')
+      break
+    case 'green':
+      label.classList.add('is-success')
+      break
+    case 'blue':
+      label.classList.add('is-info')
+      break
+    case 'purple': 
+      label.classList.add('is-primary')
+      break
+    case 'no':
+      label.classList.add('no-color')
+      break
+    default :
+      label.classList.add('is-danger')
+  }
+  label.textContent = body
+  if(func) func(label, color, body)
+  render(fragment, parentEl, false)
+}
+
 // Task Item Component
 async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete, id}) {
   const fragment = deepCopyFragment(templates.taskItem)
@@ -280,31 +308,8 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete,
 
   // [GET] - label 
   if (labelId) {
-    const labelFragment = deepCopyFragment(templates.taskLabel)
-    const labelTag = labelFragment.querySelector('.tag')
     const res = await starryAPI.get(`/labels/${labelId}`)
-    
-    switch (res.data.color) {
-      case 'yellow':
-        labelTag.classList.add('is-warning')
-        break
-      case 'green':
-        labelTag.classList.add('is-success')
-        break
-      case 'blue':
-        labelTag.classList.add('is-info')
-        break
-      case 'purple': 
-        labelTag.classList.add('is-primary')
-        break
-      case 'no':
-        labelTag.classList.add('no-color')
-        break
-      default :
-        labelTag.classList.add('is-danger')
-    }
-    labelTag.textContent = res.data.body
-    render(labelFragment, labelEl)
+    labelItem(labelEl, res.data)
   }
 
   // [DELETE] - task item 
@@ -339,6 +344,8 @@ async function taskWriteModal(listEl, projectId) {
   const btnCancelEl = modalEl.querySelector('.task-write-modal__btn-cancel')
   const colorSelect = modalEl.querySelector('.label-color-select')
   const colorSelectBtn = colorSelect.querySelector('.label-color-select__btn')
+  const labelBody = modalEl.querySelector('.label-body')
+  const labelBodyList = labelBody.querySelector('.label-body__list')
 
   colorSelectBtn.addEventListener('click', e => {
     colorSelect.classList.add('label-color-select--open')
@@ -351,6 +358,36 @@ async function taskWriteModal(listEl, projectId) {
       colorSelectBtn.children[0].setAttribute('class', item.querySelector('.tag').getAttribute('class'))
       colorSelect.classList.remove('label-color-select--open')
     })
+  })
+
+  // [GET] - label
+  const labelRes = await starryAPI.get('/labels')
+  labelBody.querySelector('.label-body__input').addEventListener('keyup', async e => {
+    labelBodyList.textContent = ''
+    if (e.target.value !== '') {
+      for (const {body, color} of labelRes.data) {
+        if(body.toLowerCase().includes(e.target.value.toLowerCase())) {
+          labelBody.classList.add('label-body--open')
+          labelItem(labelBodyList, {body, color}, (item, color, body) => {
+            item.addEventListener('click', e => {
+              formEl.elements.labelTitle.value = body
+              formEl.elements.labelColor.forEach(el => {
+                if(el.value === color) {
+                  el.setAttribute('checked', '')
+                }
+              })
+              colorSelectBtn.children[0].setAttribute('class', item.getAttribute('class'))
+              labelBody.classList.remove('label-body--open')
+            })
+          })
+        }
+      }
+    } else {
+      labelBody.classList.remove('label-body--open')
+    }
+  })
+  labelBody.addEventListener('blur', e => {
+    labelBody.classList.remove('label-body--open')
   })
 
   btnSaveEl.addEventListener('click', async e => {
