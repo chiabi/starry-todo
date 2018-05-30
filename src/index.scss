@@ -195,3 +195,47 @@ $main-font: 'Chela One', cursive;
     padding-top: 1em;
   }
 }
+
+.activity-list {
+  margin-top: 1em;
+}
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5em 0.3em;
+  &:nth-child(even) {
+    background-color: #eee;
+  }
+  &__body {
+    flex-grow: 1;
+    position: relative;
+    &-shadow {
+      opacity: 0;
+    }
+    &-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 1px solid transparent;
+      resize: none;
+      background-color: transparent;
+      &:not(:focus) {
+        cursor: pointer;
+      }
+      &:focus {
+        outline: none;
+        border-radius: 5px;
+        border-color: rgba($primary, 0.3);
+      }
+    }
+    &-shadow, &-input {
+      padding: 0.3em;
+    }
+  }
+  .date {
+    padding: 0 0.8em;
+    color: #bbb
+  }
+}

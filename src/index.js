@@ -5,7 +5,7 @@ const starryAPI = axios.create({
   baseURL: process.env.API_URL
 })
 
-const body = document.querySelector('body')
+const bodyEl = document.querySelector('body')
 const root = document.querySelector('.root')
 
 const templates = {
@@ -20,6 +20,7 @@ const templates = {
   taskLabel:      document.querySelector('#task-label').content,
   taskWriteModal: document.querySelector('#task-write-modal').content,
   taskModal:      document.querySelector('#task-modal').content,
+  activityItem:   document.querySelector('#activity-item').content,
 }
 
 function deepCopyFragment(template) {
@@ -120,7 +121,7 @@ async function registerPage() {
 }
 
 // Loading Component
-async function withlLoading(promise, parentEl = body) {
+async function withlLoading(promise, parentEl = bodyEl) {
   const fragment = deepCopyFragment(templates.loading)
   const el = fragment.querySelector('.loading')
   render(fragment, parentEl, false)
@@ -239,7 +240,7 @@ async function projectItem(parentEl, {title, id}) {
   })
 
   // [PATCH] - project item
-  titleInputEl.addEventListener('keydown', e => {
+  titleInputEl.addEventListener('keyup', e => {
     titleShadowEl.textContent = e.target.value
   })
   inputCompleteBlur(titleInputEl)
@@ -292,7 +293,7 @@ async function labelItem(parentEl, {color, body}, func) {
 }
 
 // Task Item Component
-async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete, id}) {
+async function taskItem(parentEl, {title, body, startDate, dueDate, complete, labelId, id}) {
   const fragment = deepCopyFragment(templates.taskItem)
   const itemEl = fragment.querySelector('.task-item')
   const titleEl = itemEl.querySelector('.task-item__title')
@@ -317,6 +318,7 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete,
 
   // [DELETE] - task item 
   btnDeleteEl.addEventListener('click', async e => {
+    e.stopPropagation()
     const removeEl = btnDeleteEl.closest('.task-item')
     removeEl.classList.add('task-item--delete')
     try {
@@ -329,11 +331,11 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete,
   })
 
   itemEl.addEventListener('click', e => {
-    e.stopPropagation()
-    taskModal(id)
+    taskModal({title, body, startDate, dueDate, labelId, complete, id})
   })
-
+  
   checkBoxEl.addEventListener('click', async e => {
+    e.stopPropagation()
     if(e.target.checked) {
       await starryAPI.patch(`/tasks/${id}`, {complete: true})
     }
@@ -355,6 +357,13 @@ async function taskWriteModal(listEl, projectId) {
   const formLabelEl = formEl.querySelector('.task-form__label')
   const labelBody = formEl.querySelector('.label-body')
   const labelBodyList = labelBody.querySelector('.label-body__list')
+
+  btnCloseEl.addEventListener('click', e => {
+    modalEl.remove()
+  })
+  btnCancelEl.addEventListener('click', e => {
+    modalEl.remove()
+  })
 
   colorSelectBtn.addEventListener('click', e => {
     colorSelect.classList.add('label-color-select--open')
@@ -388,7 +397,7 @@ async function taskWriteModal(listEl, projectId) {
                 button.addEventListener('click', e => {
                   e.preventDefault()
                   item.remove()
-                  labelId = ''
+                  labelId = null
                   formLabelEl.classList.remove('task-form__label--selected')
                 })
                 item.appendChild(button)
@@ -413,7 +422,7 @@ async function taskWriteModal(listEl, projectId) {
     const payload = {
       projectId,
       title: formEl.elements.title.value,
-      body: formEl.elements.title.body,
+      body: formEl.elements.body.value,
       startDate: formEl.elements.startDate.value,
       dueDate: formEl.elements.dueDate.value,
       complete: false
@@ -433,30 +442,87 @@ async function taskWriteModal(listEl, projectId) {
         payload.labelId = labelId
       }
       const res = await starryAPI.post('/tasks', payload)
-      taskItem(listEl, res.data)  
+      taskItem(listEl, res.data)
       modalEl.remove()
     }
   })
-  btnCloseEl.addEventListener('click', e => {
-    modalEl.remove()
-  })
-  btnCancelEl.addEventListener('click', e => {
-    modalEl.remove()
+  
+  render(fragment, bodyEl, false)
+}
+
+// Activity Item
+async function activityItem(parentEl, {body, logDate, id}) {
+  const fragment = deepCopyFragment(templates.activityItem)
+  const itemEl = fragment.querySelector('.activity-item')
+  const bodyShadowEl = itemEl.querySelector('.activity-item__body-shadow')
+  const bodyInputEl = itemEl.querySelector('.activity-item__body-input')
+  const itemDateEl = itemEl.querySelector('.date')
+
+  bodyShadowEl.textContent = body
+  bodyInputEl.value = body
+  itemDateEl.textContent = logDate
+  
+  fragment.querySelector('.delete').addEventListener('click', async e => {
+    itemEl.remove()
+    await starryAPI.delete(`/activities/${id}`)
   })
   
-  render(fragment, body, false)
+  bodyInputEl.addEventListener('keyup', e => {
+    bodyShadowEl.textContent = e.target.value
+  })
+  inputCompleteBlur(bodyInputEl)
+  // [PATCH] - activity item
+  bodyInputEl.addEventListener('blur', async e => {
+    const payload = {
+      body: e.target.value
+    }
+    try {
+      await starryAPI.patch(`/activities/${id}`, payload)
+    } catch(e) {
+      bodyShadowEl.textContent = body
+      bodyInputEl.value = body
+    }
+  })
+  render(fragment, parentEl, false)
 }
 
 // Task Modal 
-async function taskModal(taskId) {
-  const fragment = deepCopyFragment(templates.taskModal);
+async function taskModal({title, body, startDate, dueDate, complete, labelId, id}) {
+  const fragment = deepCopyFragment(templates.taskModal)
   const modalEl = fragment.querySelector('.task-modal')
   const btnCloseEl = modalEl.querySelector('.task-modal__btn-close')
-
+  const formEl = modalEl.querySelector('.activity-form')
+  const listEl = modalEl.querySelector('.activity-list')
+  
   btnCloseEl.addEventListener('click', e => {
     modalEl.remove()
   })
-  render(fragment, body, false)
+
+  // // [GET] - render task item
+  // const res = await starryAPI.get(`/tasks/${taskId}`)
+  // const data = res.data
+  modalEl.querySelector('.task-modal__title').textContent = title
+  modalEl.querySelector('.task-modal__body').textContent = body
+
+  // [GET] - render task item
+  const res = await starryAPI.get(`/tasks/${id}/activities`)
+  for (const data of res.data) {
+    await activityItem(listEl, data)
+  }
+
+  // [POST] - activity item
+  formEl.addEventListener('submit', async e => {
+    e.preventDefault()
+    const payload = {
+      body: e.target.body.value,
+      logDate: moment().format('YYYY.MM.DD h:mm:ss'),
+      taskId: id
+    }
+    const res = await starryAPI.post(`/activities`, payload)
+    e.target.body.value = ''
+    activityItem(listEl, res.data)
+  })
+  render(fragment, bodyEl, false)
 }
 
 const token = localStorage.getItem('token')

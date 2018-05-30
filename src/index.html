@@ -281,36 +281,40 @@
 
   <template id="activity-item">
     <div class="activity-item">
-      <textarea class="activity-item__body" spellcheck="false">log1</textarea>
-      <div class="date">2018.05.30 00:00:00</div>
+      <div class="activity-item__body">
+        <div class="activity-item__body-shadow"></div>
+        <textarea class="activity-item__body-input" spellcheck="false"></textarea>
+      </div>
+      <div class="date"></div>
       <button type="button" class="delete" aria-label="삭제"></button>
     </div>
   </template>
+
   <template id="task-modal">
     <div class="modal task-modal" style="display: flex">
       <div class="modal-background"></div>
       <div class="modal-card task-modal__card">
         <header class="modal-card-head">
-          <p class="modal-card-title task-modal__title"><!-- task title --></p>
+          <p class="modal-card-title task-modal__title"></p>
           <button class="delete task-modal__btn-close" aria-label="close"></button>
         </header>
         <div class="modal-card-body">
-          <div class="task-modal__date"><!-- [date-term] --></div>
-          <p class="task-modal__body"><!-- task body --></p>
-          <div class="task-modal__label"><!-- [label] --></div>
+          <div class="task-modal__date"></div>
+          <p class="task-modal__body"></p>
+          <div class="task-modal__label"></div>
           <section class="content task-modal__activities">
             <h4>Activities</h4>
             <form class="activity-form">
               <div class="field has-addons has-addons-fullwidth">
                 <div class="control">
-                  <input type="text" class="input" required>
+                  <input name="body" type="text" class="input" autocomplete="off" required>
                 </div>
                 <div class="control">
                   <button class="button is-info">save</button>
                 </div>
               </div>
             </form>
-            <div class="activity-list"><!-- [activity-item] --></div>
+            <div class="activity-list"></div>
           </section>
         </div>
         <div class="modal-card-foot">
