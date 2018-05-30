@@ -280,28 +280,30 @@ async function taskItem(parentEl, {title, startDate, dueDate, labelId, complete,
 
   // [GET] - label 
   if (labelId) {
-    const labelFragment = deepCopyFragment(template.taskLabel)
+    const labelFragment = deepCopyFragment(templates.taskLabel)
+    const labelTag = labelFragment.querySelector('.tag')
     const res = await starryAPI.get(`/labels/${labelId}`)
+    
     switch (res.data.color) {
       case 'yellow':
-        labelEl.classList.add('is-warning')
+        labelTag.classList.add('is-warning')
         break
       case 'green':
-        labelEl.classList.add('is-success')
+        labelTag.classList.add('is-success')
         break
       case 'blue':
-        lableEl.classList.add('is-info')
+        labelTag.classList.add('is-info')
         break
       case 'purple': 
-        labelEl.classList.add('is-primary')
+        labelTag.classList.add('is-primary')
         break
       case 'no':
-        labelEl.calssList.add('no-color')
+        labelTag.classList.add('no-color')
         break
       default :
-        labelEl.classList.add('is-danger')
+        labelTag.classList.add('is-danger')
     }
-    labelEl.textContent = res.data.body
+    labelTag.textContent = res.data.body
     render(labelFragment, labelEl)
   }
 
@@ -335,8 +337,22 @@ async function taskWriteModal(listEl, projectId) {
   const btnCloseEl = modalEl.querySelector('.task-write-modal__btn-close')
   const btnSaveEl = modalEl.querySelector('.task-write-modal__btn-save')
   const btnCancelEl = modalEl.querySelector('.task-write-modal__btn-cancel')
+  const colorSelect = modalEl.querySelector('.label-color-select')
+  const colorSelectBtn = colorSelect.querySelector('.label-color-select__btn')
 
-  // [POST] - label
+  colorSelectBtn.addEventListener('click', e => {
+    colorSelect.classList.add('label-color-select--open')
+  })
+  colorSelect.addEventListener('mouseleave', () => {
+    colorSelect.classList.remove('label-color-select--open')
+  })
+  colorSelect.querySelectorAll('.label-color-select__item').forEach(item => {
+    item.addEventListener('click', e => {
+      colorSelectBtn.children[0].setAttribute('class', item.querySelector('.tag').getAttribute('class'))
+      colorSelect.classList.remove('label-color-select--open')
+    })
+  })
+
   btnSaveEl.addEventListener('click', async e => {
     // [POST] - task item
     const payload = {
@@ -347,7 +363,19 @@ async function taskWriteModal(listEl, projectId) {
       dueDate: formEl.elements.dueDate.value,
       complete: false
     }
+    // label
+    const labelValue = formEl.elements.labelTitle.value
+    if (labelValue) {
+      // [POST] - label
+      const labelPayLoad = {
+        body: labelValue,
+        color: formEl.elements.labelColor.value
+      }
+      const res = await starryAPI.post('/labels', labelPayLoad)
+      payload.labelId = res.data.id
+    }
     const res = await starryAPI.post('/tasks', payload)
+    console.log(res.data)
     taskItem(listEl, res.data) 
     modalEl.remove()
   })

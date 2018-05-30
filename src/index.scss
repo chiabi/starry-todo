@@ -103,6 +103,7 @@ $main-font: 'Chela One', cursive;
     margin: 0 0.2em;
     width: 36px;
     height: 36px;
+    cursor: pointer;
     &.no-color {
       border: 1px solid $grey-lighter;
     }
@@ -111,7 +112,6 @@ $main-font: 'Chela One', cursive;
     padding: 0;
     border: 0;
     background-color: transparent;
-    cursor: pointer;
   }
   &__list {
     padding: 0.5em 0.3em;
@@ -120,9 +120,10 @@ $main-font: 'Chela One', cursive;
     border: 1px solid $grey-lighter;
     background-color: #fff;
     position: absolute;
-    top: 50%;
+    top: 0;
     left: 0;
-    transform: translate(-0.5em, -50%);
+    z-index: 10;
+    transform: translate(-0.5em, -0.5em);
     .label-color-select--open & {
       display: flex;
     }
@@ -147,10 +148,15 @@ $main-font: 'Chela One', cursive;
   }
 }
 
+.task-form__label {
+  align-items: flex-start
+}
 .label-title {
   &__list {
     // display: none;
     padding: 0.5em;
+    max-height: 8em;
+    overflow-y: auto;
     margin-top: $radius * -1;
     border: 1px solid $grey-lighter;
     border-bottom-left-radius: $radius;
