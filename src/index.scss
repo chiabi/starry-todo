@@ -149,7 +149,18 @@ $main-font: 'Chela One', cursive;
 }
 
 .task-form__label {
-  align-items: flex-start
+  align-items: flex-start;
+  .label-selected-body {
+    display: none
+  }
+  &--selected {
+    .label-color-select, .label-body {
+      display: none;
+    }
+    .label-selected-body {
+      display: block;
+    }
+  }
 }
 .label-body {
   &__list {
@@ -168,5 +179,19 @@ $main-font: 'Chela One', cursive;
     .label-body--open & {
       display: block;
     }
+  }
+}
+
+.task-modal {
+  &__date {
+    margin-bottom: 1em;
+  }
+  &__body {
+    margin-bottom: 2em;
+  }
+  &__activities {
+    border-top: 1px solid #eee;
+    margin-top: 2em;
+    padding-top: 1em;
   }
 }
