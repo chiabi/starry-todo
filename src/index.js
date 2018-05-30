@@ -121,7 +121,7 @@ async function registerPage() {
 }
 
 // Loading Component
-async function withlLoading(promise, parentEl = bodyEl) {
+async function withLoading(promise, parentEl = bodyEl) {
   const fragment = deepCopyFragment(templates.loading)
   const el = fragment.querySelector('.loading')
   render(fragment, parentEl, false)
@@ -140,7 +140,7 @@ async function indexPage() {
     logout()
     loginPage()
   })
-  withlLoading(projectContent(contentEl))
+  withLoading(projectContent(contentEl))
   render(fragment)
 }
 
@@ -257,14 +257,15 @@ async function projectItem(parentEl, {title, id}) {
   })
 
   btnAddEl.addEventListener('click', e => {
-    withlLoading(taskWriteModal(listEl, id))
+    withLoading(taskWriteModal(listEl, {projectId: id}, addTask))
   })
   
   render(fragment, parentEl, false)
 }
 
 // Label Item Component
-async function labelItem(parentEl, {color, body}, func) {
+async function labelItem(parentEl, labelObj, func) {
+  const {color, body} = labelObj
   const fragment = deepCopyFragment(templates.taskLabel)
   const label = fragment.querySelector('.tag')
 
@@ -294,7 +295,7 @@ async function labelItem(parentEl, {color, body}, func) {
 
 // Task Item Component
 async function taskItem(parentEl, taskObj) {
-  const {title, body, startDate, dueDate, complete, labelId, id} = taskObj
+  const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskItem)
   const itemEl = fragment.querySelector('.task-item')
   const titleEl = itemEl.querySelector('.task-item__title')
@@ -332,7 +333,7 @@ async function taskItem(parentEl, taskObj) {
   })
 
   itemEl.addEventListener('click', e => {
-    withlLoading(taskModal(taskObj))
+    withLoading(taskModal(parentEl, taskObj))
   })
   
   checkBoxEl.addEventListener('click', async e => {
@@ -341,12 +342,12 @@ async function taskItem(parentEl, taskObj) {
       await starryAPI.patch(`/tasks/${id}`, {complete: true})
     }
   })
-
   render(fragment, parentEl, false)
 }
 
 // Task Write Modal Component
-async function taskWriteModal(listEl, projectId) {
+async function taskWriteModal(listEl, taskObj, func) {
+  const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskWriteModal)
   const modalEl = fragment.querySelector('.task-write-modal')
   const formEl = modalEl.querySelector('.task-form')
@@ -358,6 +359,27 @@ async function taskWriteModal(listEl, projectId) {
   const formLabelEl = formEl.querySelector('.task-form__label')
   const labelBody = formEl.querySelector('.label-body')
   const labelBodyList = labelBody.querySelector('.label-body__list')
+
+  if (title) {
+    formEl.elements.title.value = title
+    formEl.elements.body.value = body
+  }
+  function addDeleteButton(item) {
+    const button = document.createElement('button')
+    button.classList.add('delete')
+    button.addEventListener('click', e => {
+      e.preventDefault()
+      item.remove()
+      selectLabelId = null
+      formLabelEl.classList.remove('task-form__label--selected')
+    })
+    item.appendChild(button)
+  }
+  if (labelId) {
+    const res = await starryAPI.get(`/labels/${labelId}`)
+    formLabelEl.classList.add('task-form__label--selected')
+    labelItem(formEl.querySelector('.label-selected-body'), res.data, addDeleteButton)
+  }
 
   btnCloseEl.addEventListener('click', e => {
     modalEl.remove()
@@ -378,7 +400,7 @@ async function taskWriteModal(listEl, projectId) {
       colorSelect.classList.remove('label-color-select--open')
     })
   })
-  let labelId;
+  let selectLabelId;
   // [GET] - label
   const labelRes = await starryAPI.get('/labels')
   labelBody.querySelector('.label-body__input').addEventListener('keyup', async e => {
@@ -387,22 +409,14 @@ async function taskWriteModal(listEl, projectId) {
       for (const {id, body, color} of labelRes.data) {
         if(body.toLowerCase().includes(e.target.value.toLowerCase())) {
           labelBody.classList.add('label-body--open')
+          // 라벨 자동완성 목록에서 생성되는 라벨
           labelItem(labelBodyList, {body, color}, item => {
             item.addEventListener('click', e => {
-              labelId = id
+              selectLabelId = id
               formEl.elements.labelTitle.value = ''
               formLabelEl.classList.add('task-form__label--selected')
-              labelItem(formEl.querySelector('.label-selected-body'), {color, body}, item => {
-                const button = document.createElement('button')
-                button.classList.add('delete')
-                button.addEventListener('click', e => {
-                  e.preventDefault()
-                  item.remove()
-                  labelId = null
-                  formLabelEl.classList.remove('task-form__label--selected')
-                })
-                item.appendChild(button)
-              })
+              // 선택되어 폼을 숨기면서 생성되는 라벨
+              labelItem(formEl.querySelector('.label-selected-body'), {color, body}, addDeleteButton)
               labelBody.classList.remove('label-body--open')
             })
           })
@@ -416,10 +430,9 @@ async function taskWriteModal(listEl, projectId) {
   labelBody.addEventListener('blur', e => {
     labelBody.classList.remove('label-body--open')
   })
-  
+
   formEl.addEventListener('submit', async e => {
     e.preventDefault()
-    // [POST] - task item
     const payload = {
       projectId,
       title: formEl.elements.title.value,
@@ -439,16 +452,24 @@ async function taskWriteModal(listEl, projectId) {
         }
         const res = await starryAPI.post('/labels', labelPayLoad)
         payload.labelId = res.data.id
-      } else if (labelId) {
-        payload.labelId = labelId
+      } else if (selectLabelId) {
+        payload.labelId = selectLabelId
       }
-      const res = await starryAPI.post('/tasks', payload)
-      taskItem(listEl, res.data)
+      func(payload, id)
       modalEl.remove()
     }
   })
-  
+
   render(fragment, bodyEl, false)
+}
+
+async function addTask(payload) {
+  const res = await starryAPI.post('/tasks', payload)
+  taskItem(listEl, res.data)
+}
+
+async function editTask(payload, taskId) {
+  const res = starryAPI.patch(`/tasks/${taskId}`, payload)
 }
 
 // Activity Item
@@ -489,8 +510,8 @@ async function activityItem(parentEl, activityObj) {
 }
 
 // Task Modal 
-async function taskModal(taskObj) {
-  const {title, body, startDate, dueDate, complete, labelId, id} = taskObj
+async function taskModal(itemParentEl, taskObj) {
+  const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskModal)
   const modalEl = fragment.querySelector('.task-modal')
   const btnCloseEl = modalEl.querySelector('.task-modal__btn-close')
@@ -527,6 +548,10 @@ async function taskModal(taskObj) {
     const res = await starryAPI.post(`/activities`, payload)
     e.target.body.value = ''
     activityItem(listEl, res.data)
+  })
+  modalEl.querySelector('.task-modal__btn-edit').addEventListener('click', () =>{
+    withLoading(taskWriteModal(itemParentEl, taskObj, editTask))
+    modalEl.remove();
   })
   render(fragment, bodyEl, false)
 }
