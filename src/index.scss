@@ -7,6 +7,14 @@ $main-font: 'Gugi', cursive;
   height: 100%;
   overflow: hidden;
 }
+@mixin offscreen {
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+}
 html {
   @include full;
 }
@@ -109,9 +117,9 @@ body {
   height: 100%;
   background-color: #eee;
 }
-.project-utils {
+// .project-utils {
 
-}
+// }
 .project-write-form {
   margin: 0 auto 1em;
   .button {
@@ -204,9 +212,60 @@ body {
   overflow-y: auto;
 }
 .task-item {
+  display: flex;
+  flex-direction: column;
   position: relative;
   &--delete {
     display: none;
+  }
+  .delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  &__complete-checkbox {
+    width: 25px;
+    display: block;
+    position: relative;
+    cursor: pointer;
+    order: -1;
+    margin-bottom: 1em;
+    &.checked {
+      .checkmark {
+        animation: checkMark 0.3s
+      }
+    }
+    input {
+      position: absolute;
+      opacity: 0;
+      &:checked ~ .checkmark {
+        border-color: rgba($primary, 0.5);
+        color: $primary;
+      } 
+    }
+    .checkmark {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 25px;
+      width: 25px;
+      border: 1px solid #ddd;
+      font-size: 0.8em;
+      border-radius: 100%;
+      color: #ddd;
+    }
+  }
+}
+
+@keyframes checkMark {
+  0% {
+    box-shadow: 0 0 0 0 rgba($purple, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px 1px rgba($purple, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($purple, 0.5);
   }
 }
 

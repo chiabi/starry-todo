@@ -16,6 +16,7 @@
     "moment": "^2.22.1",
     "node-sass": "^4.9.0",
     "parcel-bundler": "^1.8.1",
+    "pikaday": "^1.7.0",
     "rimraf": "^2.6.2"
   }
 }

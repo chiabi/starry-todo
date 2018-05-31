@@ -1,5 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
+import moment from 'pikaday'
 
 const starryAPI = axios.create({
   baseURL: process.env.API_URL
@@ -360,11 +361,11 @@ async function taskItem(parentEl, taskObj) {
   const fragment = deepCopyFragment(templates.taskItem)
   const itemEl = fragment.querySelector('.task-item')
   const titleEl = itemEl.querySelector('.task-item__title')
+  const checkBoxEl = itemEl.querySelector('.task-item__complete-checkbox')
   const checkEl = itemEl.querySelector('.task-item__complete-check')
   const dateEl = itemEl.querySelector('.task-item__date')
   const labelEl = itemEl.querySelector('.task-item__label')
   const btnDeleteEl = itemEl.querySelector('.task-item__btn-delete')
-  const checkBoxEl = itemEl.querySelector('.task-item__complete-check')
 
   if(complete) {
     checkEl.setAttribute('checked', '')
@@ -397,12 +398,19 @@ async function taskItem(parentEl, taskObj) {
     withLoading(taskModal(parentEl, taskObj))
   })
   
-  checkBoxEl.addEventListener('click', async e => {
+  checkBoxEl.addEventListener('click', e => {
     e.stopPropagation()
+  })
+  checkEl.addEventListener('change', async e => {
     if(e.target.checked) {
+      checkBoxEl.classList.add('checked')
       await starryAPI.patch(`/tasks/${id}`, {complete: true})
+    } else {
+      checkBoxEl.classList.remove('checked')
+      await starryAPI.patch(`/tasks/${id}`, {complete: false})
     }
   })
+
   itemEl.classList.add(`task-item-${id}`)
   parentEl.prepend(fragment)
   return itemEl

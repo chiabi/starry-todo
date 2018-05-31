@@ -159,10 +159,12 @@
   <template id="task-item">
     <div class="box content task-item">
       <h3 class="task-item__title"></h3>
-      <div class="task-item__complete-check checkbox">
+      <label class="task-item__complete-checkbox">
         <input type="checkbox" name="complete" class="task-item__complete-check">
-        <label for="">완료 체크</label>
-      </div>
+        <span class="checkmark">
+          <i class="fas fa-check"></i>
+        </span>
+      </label>
       <button class="delete task-item__btn-delete" title="delete task"></button>
       <p class="task-item__date"><span class="start"></span> <span class="due"></span></p>
       <div class="constrols task-item__label">
@@ -193,13 +195,13 @@
             <label class="label">Set term</label>
             <div class="field set-term">
               <div class="control has-icons-left ">
-                <input name="startDate" type="text" class="input" aria-label="start date" placeholder="2018.05.29">
+                <input name="startDate" type="text" id="startDatePicker" class="input" aria-label="start date" placeholder="2018.05.29">
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
               </div>
               <div class="control has-icons-left ">
-                <input name="dueDate" type="text" class="input" aria-label="due date" placeholder="2018.05.29">
+                <input name="dueDate" type="text" id="dueDatePicker" class="input" aria-label="due date" placeholder="2018.05.29">
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
