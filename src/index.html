@@ -156,6 +156,13 @@
     </div>
   </template>
 
+  <template id="date-term">
+    <p class="date-term">
+      <i class="fas fa-clock"></i>
+      <span class="start"></span> / <span class="end"></span>
+    </p>
+  </template>
+
   <template id="task-item">
     <div class="box content task-item">
       <h3 class="task-item__title"></h3>
@@ -166,12 +173,12 @@
         </span>
       </label>
       <button class="delete task-item__btn-delete" title="delete task"></button>
-      <p class="task-item__date"><span class="start"></span> <span class="due"></span></p>
+      <div class="task-item__date"></div>
       <div class="constrols task-item__label">
       </div>
     </div>
   </template>
-  
+
   <template id="task-label">
     <span class="tag"></span>
   </template>
@@ -195,13 +202,13 @@
             <label class="label">Set term</label>
             <div class="field set-term">
               <div class="control has-icons-left ">
-                <input name="startDate" type="text" id="startDatePicker" class="input" aria-label="start date" placeholder="2018.05.29">
+                <input name="startDate" type="text" id="startDatePicker" class="input" aria-label="start date" placeholder="2018.01.01" autocomplete="off"/>
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
               </div>
               <div class="control has-icons-left ">
-                <input name="dueDate" type="text" id="dueDatePicker" class="input" aria-label="due date" placeholder="2018.05.29">
+                <input name="dueDate" type="text" id="dueDatePicker" class="input" aria-label="due date" placeholder="2018.01.01" autocomplete="off"/>
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
@@ -278,13 +285,6 @@
           </div>
         </form>
       </div>
-    </div>
-  </template>
-
-  <template idv="date-term">
-    <div class="date-term">
-      <span class="start"></span>
-      <span class="end"></span>
     </div>
   </template>
 

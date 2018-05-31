@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic');
 @import '../node_modules/bulma';
+@import '../node_modules/pikaday/scss/pikaday';
 
 $main-font: 'Gugi', cursive;
 @mixin full {
@@ -205,6 +206,13 @@ body {
   }
 }
 
+.date-term {
+  margin-bottom: 0.5em;
+  color: #aaa;
+  .start {
+    // margin-right: 0.5em
+  }
+}
 .task-list {
   flex: auto;
   height: 100%;

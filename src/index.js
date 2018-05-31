@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import moment from 'pikaday'
+import Pikaday from 'pikaday'
 
 const starryAPI = axios.create({
   baseURL: process.env.API_URL
@@ -17,6 +17,7 @@ const templates = {
   index:          document.querySelector('#index').content,
   projectContent: document.querySelector('#project-content').content,
   projectItem:    document.querySelector('#project-item').content,
+  dateTerm:       document.querySelector('#date-term').content,
   taskItem:       document.querySelector('#task-item').content,
   taskLabel:      document.querySelector('#task-label').content,
   taskWriteModal: document.querySelector('#task-write-modal').content,
@@ -348,6 +349,12 @@ async function labelItem(parentEl, labelObj, func) {
   render(fragment, parentEl, false)
 }
 
+async function dateTerm(parentEl, start, end) {
+  const fragment = deepCopyFragment(templates.dateTerm)
+  fragment.querySelector('.start').textContent = start
+  fragment.querySelector('.end').textContent = end
+  render(fragment, parentEl)
+}
 /* ------------------------
  * Task Item Component
  * ------------------------
@@ -371,8 +378,10 @@ async function taskItem(parentEl, taskObj) {
     checkEl.setAttribute('checked', '')
   }
   titleEl.textContent = title;
-  dateEl.querySelector('.start').textContent = startDate
-  dateEl.querySelector('.due').textContent = dueDate
+
+  if(startDate || dueDate) {
+    dateTerm(dateEl, startDate, dueDate)
+  }
 
   // [GET] - label 
   if (labelId) {
@@ -441,6 +450,10 @@ async function taskWriteModal(listEl, taskObj, func) {
     formEl.elements.title.value = title
     formEl.elements.body.value = body
   }
+  if (startDate || dueDate) {
+    formEl.elements.startDate.value = startDate
+    formEl.elements.dueDate.value = dueDate
+  }
   function addDeleteButton(item) {
     const button = document.createElement('button')
     button.classList.add('delete')
@@ -458,6 +471,7 @@ async function taskWriteModal(listEl, taskObj, func) {
     labelItem(formEl.querySelector('.label-selected-body'), res.data, addDeleteButton)
   }
 
+  // modal close
   btnCloseEl.addEventListener('click', e => {
     modalEl.remove()
   })
@@ -465,6 +479,7 @@ async function taskWriteModal(listEl, taskObj, func) {
     modalEl.remove()
   })
 
+  // label color
   colorSelectBtn.addEventListener('click', e => {
     colorSelect.classList.add('label-color-select--open')
     colorSelect.setAttribute('tabIndex', '0')
@@ -511,6 +526,22 @@ async function taskWriteModal(listEl, taskObj, func) {
   labelBody.addEventListener('blur', e => {
     labelBody.classList.remove('label-body--open')
   })
+  
+  // datepicker
+  const datepicker = {
+    format: 'YYYY.MM.DD',
+    minDate: moment('20180101').toDate(),
+    maxDate: moment('20301231').toDate(),
+    yearRange: [2018,2030]
+  }
+  const startPicker = new Pikaday({
+    field: formEl.querySelector('#startDatePicker'),
+    ...datepicker
+  })
+  const endPicker = new Pikaday({
+    field: formEl.querySelector('#dueDatePicker'),
+    ...datepicker
+  })
 
   formEl.addEventListener('submit', async e => {
     e.preventDefault()
@@ -536,10 +567,6 @@ async function taskWriteModal(listEl, taskObj, func) {
       } else if (selectLabelId) {
         payload.labelId = selectLabelId
       }
-      // 여기서 payload로 처리할 건데 인자를 어떻게 넘겨줘야 둘다 사용할 수 있을까
-      // taskItem의 값을 바꾸는 처리를 해야함
-      // taskItem이 바꿔치기 되어야함
-      // 그려놓고 렌더가 아니라 replace가 되어야함
 
       func(listEl, payload, id)
       modalEl.remove()
@@ -619,6 +646,7 @@ async function taskModal(itemParentEl, taskObj) {
   const formEl = modalEl.querySelector('.activity-form')
   const listEl = modalEl.querySelector('.activity-list')
   const labelEl = modalEl.querySelector('.task-modal__label')
+  const dateEl = modalEl.querySelector('.task-modal__date')
   
   btnCloseEl.addEventListener('click', e => {
     modalEl.remove()
@@ -627,6 +655,9 @@ async function taskModal(itemParentEl, taskObj) {
   modalEl.querySelector('.task-modal__title').textContent = title
   modalEl.querySelector('.task-modal__body').textContent = body
   
+  if(startDate || dueDate) {
+    dateTerm(dateEl, startDate, dueDate)
+  }
   if (labelId) {
     const res = await starryAPI.get(`/labels/${labelId}`)
     labelItem(labelEl, res.data)
