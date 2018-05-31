@@ -99,6 +99,9 @@ $main-font: 'Chela One', cursive;
 
 .label-color-select {
   position: relative;
+  &:focus {
+    outline: none;
+  }
   .tag {
     margin: 0 0.2em;
     width: 36px;
@@ -238,4 +241,8 @@ $main-font: 'Chela One', cursive;
     padding: 0 0.8em;
     color: #bbb
   }
+}
+
+textarea {
+  resize: none
 }

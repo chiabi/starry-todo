@@ -27,6 +27,13 @@ function deepCopyFragment(template) {
   return document.importNode(template, true)
 }
 
+/* ------------------------
+ * render
+ * ------------------------
+ * fragment: 그려질 fragment
+ * parent: 기준이 될 부모 엘리먼트
+ * clear: parent를 지우고 다시 그릴지 여부
+ */
 function render(fragment, parent = root, clear = true) {
   if(clear) {
     parent.textContent = ''
@@ -44,8 +51,13 @@ function logout() {
   delete starryAPI.defaults.headers['Authorization']
 }
 
-// Notification Component
-function notification(message, parentNode, stateClass) {
+/* ------------------------
+ * Notification Component
+ * ------------------------
+ * message: 출력할 문자열
+ * stateClass: 스타일 관련 클래스명 문자열
+ */
+function notification(message, stateClass) {
   const fragment = document.importNode(templates.notification, true);
   const notification = fragment.querySelector('.notification');
   
@@ -54,8 +66,15 @@ function notification(message, parentNode, stateClass) {
   render(fragment, parentNode)
 }
 
-// Sign Submit Button Event
-function signSubmit(path, {form, btnSubmit}, failMessage) {
+/* ------------------------
+ * Sign Submit Button Event
+ * ------------------------
+ * path: http POST시 전달 할 path 문자열
+ * formElements: form과 form 버튼 엘리먼트 담은 객체
+ * failMessage: sign in, up 실패시 노출할 메시지 문자열
+ */
+function signSubmit(path, formElements, failMessage) {
+  const {form, btnSubmit} = formElements
   form.addEventListener('submit', async e => {
     e.preventDefault();
     btnSubmit.classList.add('is-loading')
@@ -82,13 +101,19 @@ function signSubmit(path, {form, btnSubmit}, failMessage) {
   })
 }
 
-// Sign Link Button Event
+/* ------------------------
+ * Sign Link Button Event
+ * ------------------------
+ * btnLink: link 버튼 엘리먼트
+ * func: link 버튼 클릭시 실행할 page 함수
+ */
 function signLink(btnLink, func) {
   btnLink.addEventListener('click', e => {
     e.preventDefault()
     func()
   })
 }
+
 
 // Login Page
 async function loginPage() {
@@ -120,7 +145,12 @@ async function registerPage() {
   render(fragment)
 }
 
-// Loading Component
+/* ------------------------
+ * Loading Component
+ * ------------------------
+ * promise: 로딩 뒤에 실행 될 promise
+ * parent: loading render될 부모엘리먼트 (기본값 body 엘리먼트)
+ */
 async function withLoading(promise, parentEl = bodyEl) {
   const fragment = deepCopyFragment(templates.loading)
   const el = fragment.querySelector('.loading')
@@ -144,7 +174,11 @@ async function indexPage() {
   render(fragment)
 }
 
-// Project Notification Component
+/* ------------------------
+ * Project Notification Component
+ * ------------------------
+ * message: 프로젝트 notification에 사용할 메시지 문자열
+ */
 function projectNotification(message = `Network error please try again later`) {
   const notificationEl = document.querySelector('.project-notification')
   notification(message, notificationEl, 'is-warning')
@@ -153,7 +187,11 @@ function projectNotification(message = `Network error please try again later`) {
   }, 3000)
 }
 
-// Form Element Blur
+/* ------------------------
+ * Form Element Blur
+ * ------------------------
+ * el: enter keydown 이벤트시 blur시킬 엘리먼트
+ */
 function inputCompleteBlur(el) {
   el.addEventListener('keydown', e => {
     if(e.keyCode === 13) {
@@ -163,7 +201,11 @@ function inputCompleteBlur(el) {
   })
 }
 
-// Project Content Component
+/* ------------------------
+ * Project Content Component
+ * ------------------------
+ * parentEl: render될때 기준이 되는 부모 엘리먼트
+ */
 async function projectContent(parentEl) {
   const fragment = deepCopyFragment(templates.projectContent)
   const listEl = fragment.querySelector('.project-list')
@@ -206,8 +248,14 @@ async function projectContent(parentEl) {
   render(fragment, parentEl, false)
 }
 
-// Project Item Component
-async function projectItem(parentEl, {title, id}) {
+/* ------------------------
+ * Project Item Component
+ * ------------------------
+ * parentEl: render될때 기준이 되는 부모 엘리먼트
+ * projectObj: 프로젝트 title, id 정보를 담은 객체
+ */
+async function projectItem(parentEl, projectObj) {
+  const {title, id} = projectObj;
   const fragment = deepCopyFragment(templates.projectItem)
   const listEl = fragment.querySelector('.task-list')
   const btnDeleteEl = fragment.querySelector('.project-item__btn-delete')
@@ -263,7 +311,13 @@ async function projectItem(parentEl, {title, id}) {
   render(fragment, parentEl, false)
 }
 
-// Label Item Component
+/* ------------------------
+ * Label Item Component
+ * ------------------------
+ * parentEl: render될때 기준이 되는 부모 엘리먼트
+ * labelObj: 라벨 color, body 정보를 담은 객체
+ * func: 라벨 렌더 전 추가로 넣고 싶은 로직담은 함수
+ */
 async function labelItem(parentEl, labelObj, func) {
   const {color, body} = labelObj
   const fragment = deepCopyFragment(templates.taskLabel)
@@ -293,7 +347,14 @@ async function labelItem(parentEl, labelObj, func) {
   render(fragment, parentEl, false)
 }
 
-// Task Item Component
+/* ------------------------
+ * Task Item Component
+ * ------------------------
+ * parentEl: render될때 기준이 되는 부모 엘리먼트
+ * taskObj: 작업의 title, body, startDate, dueDate, complete, labelId, projectId, id 정보를 담은 객체
+ * ------------------------
+ * return: itemEl promise
+ */
 async function taskItem(parentEl, taskObj) {
   const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskItem)
@@ -342,10 +403,18 @@ async function taskItem(parentEl, taskObj) {
       await starryAPI.patch(`/tasks/${id}`, {complete: true})
     }
   })
+  itemEl.classList.add(`task-item-${id}`)
   render(fragment, parentEl, false)
+  return itemEl
 }
 
-// Task Write Modal Component
+/* ------------------------
+ * Task Write Modal Component
+ * ------------------------
+ * listEl: taskItem()에 전달할 render될때 기준이 되는 부모 엘리먼트
+ * taskObj: 작업의 title, body, startDate, dueDate, complete, labelId, projectId, id 정보를 담은 객체
+ * func: addTask(), editTask()등의 post, patch 통신을 위한 함수
+ */
 async function taskWriteModal(listEl, taskObj, func) {
   const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskWriteModal)
@@ -390,8 +459,11 @@ async function taskWriteModal(listEl, taskObj, func) {
 
   colorSelectBtn.addEventListener('click', e => {
     colorSelect.classList.add('label-color-select--open')
+    colorSelect.setAttribute('tabIndex', '0')
+    colorSelect.focus()
   })
   colorSelect.addEventListener('blur', () => {
+    colorSelect.removeAttribute('tabIndex')
     colorSelect.classList.remove('label-color-select--open')
   })
   colorSelect.querySelectorAll('.label-color-select__item').forEach(item => {
@@ -400,6 +472,7 @@ async function taskWriteModal(listEl, taskObj, func) {
       colorSelect.classList.remove('label-color-select--open')
     })
   })
+
   let selectLabelId;
   // [GET] - label
   const labelRes = await starryAPI.get('/labels')
@@ -455,7 +528,12 @@ async function taskWriteModal(listEl, taskObj, func) {
       } else if (selectLabelId) {
         payload.labelId = selectLabelId
       }
-      func(payload, id)
+      // 여기서 payload로 처리할 건데 인자를 어떻게 넘겨줘야 둘다 사용할 수 있을까
+      // taskItem의 값을 바꾸는 처리를 해야함
+      // taskItem이 바꿔치기 되어야함
+      // 그려놓고 렌더가 아니라 replace가 되어야함
+
+      func(listEl, payload, id)
       modalEl.remove()
     }
   })
@@ -463,16 +541,25 @@ async function taskWriteModal(listEl, taskObj, func) {
   render(fragment, bodyEl, false)
 }
 
-async function addTask(payload) {
+async function addTask(parentEl, payload) {
   const res = await starryAPI.post('/tasks', payload)
-  taskItem(listEl, res.data)
+  withLoading(taskItem(parentEl, res.data))
 }
 
-async function editTask(payload, taskId) {
-  const res = starryAPI.patch(`/tasks/${taskId}`, payload)
+async function editTask(parentEl, payload, taskId) {
+  const oldTaskItem = document.querySelector(`.task-item-${taskId}`)
+  const res = await starryAPI.patch(`/tasks/${taskId}`, payload)
+  let newTaskItem;
+  await taskItem(parentEl, res.data).then(val => newTaskItem = val)
+  parentEl.replaceChild(newTaskItem, oldTaskItem)
 }
 
-// Activity Item
+/* ------------------------
+ * Activity Item
+ * ------------------------
+ * parentEl: render될 기준이 되는 부모 엘리먼트
+ * activityObj: 활동 body, logDate, id 정보를 담은 객체
+ */
 async function activityItem(parentEl, activityObj) {
   const {body, logDate, id} = activityObj
   const fragment = deepCopyFragment(templates.activityItem)
@@ -509,7 +596,12 @@ async function activityItem(parentEl, activityObj) {
   render(fragment, parentEl, false)
 }
 
-// Task Modal 
+/* ------------------------
+ * Task Modal 
+ * ------------------------
+ * itemParentEl: taskWriteModal()함수 첫번째 인자에 전달할 작업 아이템의 부모 엘리먼트
+ * taskObj: 작업의 title, body, startDate, dueDate, complete, labelId, projectId, id 정보를 담은 객체
+ */
 async function taskModal(itemParentEl, taskObj) {
   const {title, body, startDate, dueDate, complete, labelId, projectId, id} = taskObj
   const fragment = deepCopyFragment(templates.taskModal)
