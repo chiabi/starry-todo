@@ -55,15 +55,16 @@ function logout() {
  * Notification Component
  * ------------------------
  * message: 출력할 문자열
+ * parentNode: render 기준이 될 부모 엘리먼트
  * stateClass: 스타일 관련 클래스명 문자열
  */
-function notification(message, stateClass) {
+function notification(message, parentEl, stateClass) {
   const fragment = document.importNode(templates.notification, true);
   const notification = fragment.querySelector('.notification');
   
   notification.textContent = message
   notification.classList.add(stateClass)
-  render(fragment, parentNode)
+  render(fragment, parentEl)
 }
 
 /* ------------------------
@@ -307,8 +308,7 @@ async function projectItem(parentEl, projectObj) {
   btnAddEl.addEventListener('click', e => {
     withLoading(taskWriteModal(listEl, {projectId: id}, addTask))
   })
-  
-  render(fragment, parentEl, false)
+  parentEl.prepend(fragment)
 }
 
 /* ------------------------
@@ -404,7 +404,7 @@ async function taskItem(parentEl, taskObj) {
     }
   })
   itemEl.classList.add(`task-item-${id}`)
-  render(fragment, parentEl, false)
+  parentEl.prepend(fragment)
   return itemEl
 }
 
@@ -539,6 +539,7 @@ async function taskWriteModal(listEl, taskObj, func) {
   })
 
   render(fragment, bodyEl, false)
+  formEl.elements.title.focus()
 }
 
 async function addTask(parentEl, payload) {
@@ -550,7 +551,7 @@ async function editTask(parentEl, payload, taskId) {
   const oldTaskItem = document.querySelector(`.task-item-${taskId}`)
   const res = await starryAPI.patch(`/tasks/${taskId}`, payload)
   let newTaskItem;
-  await taskItem(parentEl, res.data).then(val => newTaskItem = val)
+  await withLoading(taskItem(parentEl, res.data).then(val => newTaskItem = val), oldTaskItem)
   parentEl.replaceChild(newTaskItem, oldTaskItem)
 }
 
@@ -641,10 +642,12 @@ async function taskModal(itemParentEl, taskObj) {
     e.target.body.value = ''
     activityItem(listEl, res.data)
   })
+
   modalEl.querySelector('.task-modal__btn-edit').addEventListener('click', () =>{
     withLoading(taskWriteModal(itemParentEl, taskObj, editTask))
     modalEl.remove();
   })
+
   render(fragment, bodyEl, false)
 }
 

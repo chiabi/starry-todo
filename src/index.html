@@ -19,71 +19,75 @@
 
   <template id="login">
     <div class="content sign-page">
-      <h1 class="sign__title">Log in</h1>
-      <form class="sign-form login-form">
-        <div class="sign-form__notification"></div>
-        <div class="field">
-          <label for="username" class="label">Name</label>
-          <div class="control">
-            <input name="username" id="username" class="input" type="text" placeholder="user name" required>
+      <div class="card">
+        <h1 class="sign-page__title">Log in</h1>
+        <form class="sign-form login-form">
+          <div class="sign-form__notification"></div>
+          <div class="field">
+            <label for="username" class="label">Name</label>
+            <div class="control">
+              <input name="username" id="username" class="input" type="text" placeholder="user name" required>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label for="password" class="label">Password</label>
-          <div class="control">
-            <input name="password" id="password" class="input" type="password" placeholder="password" required>
+          <div class="field">
+            <label for="password" class="label">Password</label>
+            <div class="control">
+              <input name="password" id="password" class="input" type="password" placeholder="password" required>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <button class="button is-primary login-form__btn-submit">Submit</button>
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary login-form__btn-submit">Submit</button>
+            </div>
           </div>
-        </div>
-        <div class="login-form__link">
-            Create an account. <button class="button is-text login-form__btn-link">Sign up</button>
-        </div>
-      </form>
+          <div class="login-form__link">
+              Create an account. <button class="button is-text login-form__btn-link">Sign up</button>
+          </div>
+        </form>
+      </div>
     </div>
   </template>
 
   <template id="register">
     <div class="content sign-page">
-      <h1 class="sign__title">Create new account</h1>
-      <form class="sign-form register-form">
-        <div class="sign-form__notification"></div>
-        <div class="field">
-          <label for="username" class="label">Name</label>
-          <div class="control">
-            <input name="username" id="username" class="input" type="text" placeholder="user name" required>
+      <div class="card">
+        <h1 class="sign-page__title">Create new account</h1>
+        <form class="sign-form register-form">
+          <div class="sign-form__notification"></div>
+          <div class="field">
+            <label for="username" class="label">Name</label>
+            <div class="control">
+              <input name="username" id="username" class="input" type="text" placeholder="user name" required>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label for="password" class="label">Password</label>
-          <div class="control">
-            <input name="password" id="password" class="input" type="password" placeholder="password" required>
+          <div class="field">
+            <label for="password" class="label">Password</label>
+            <div class="control">
+              <input name="password" id="password" class="input" type="password" placeholder="password" required>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <button class="button is-primary register-form__btn-submit">Submit</button>
+          <div class="field">
+            <div class="control">
+              <button class="button is-primary register-form__btn-submit">Submit</button>
+            </div>
           </div>
-        </div>
-        <div class="login-form__link">
-            Sign in to your account. <button class="button is-text register-form__btn-link">Log in</button>
-        </div>
-      </form>
+          <div class="login-form__link">
+              Sign in to your account. <button class="button is-text register-form__btn-link">Log in</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </template>
+  </template> 
 
   <template id="notification">
     <div class="notification"></div>
   </template>
 
   <template id="index">
-    <div class="header">
+    <header class="header">
       <h1 class="header__logo">Starry <span>todo</span></h1>
       <button class="header__btn-logout">Log out</button>
-    </div>
+    </header>
     <div class="contents"></div>
   </template>
 
@@ -91,7 +95,7 @@
     <div class="project-content">
       <div class="project-notification"></div>
       <div class="project-utils">
-        <!-- <form class="projects-search-form">
+        <form class="projects-search-form">
           <div class="field has-addons projects-search">
             <div class="control">
               <input type="text" class="input" placeholder="search task name" aria-label="search task form">
@@ -120,7 +124,7 @@
               </label>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
 
       <form class="project-write-form">
@@ -142,7 +146,7 @@
         <textarea class="project-item__title-input" spellcheck="false"></textarea>
       </div>
       <button class="delete project-item__btn-delete" title="delete project"></button>
-      <div class="control">
+      <div class="control task-list__control">
         <button class="button project-item__btn-add-task">
           <span class="icon"><i class="fas fa-plus"></i></span>
           <span>add your task</span>
@@ -155,7 +159,10 @@
   <template id="task-item">
     <div class="box content task-item">
       <h3 class="task-item__title"></h3>
-      <input type="checkbox" name="complete" class="task-item__complete-check" aria-label="완료 처리 체크">
+      <div class="task-item__complete-check checkbox">
+        <input type="checkbox" name="complete" class="task-item__complete-check">
+        <label for="">완료 체크</label>
+      </div>
       <button class="delete task-item__btn-delete" title="delete task"></button>
       <p class="task-item__date"><span class="start"></span> <span class="due"></span></p>
       <div class="constrols task-item__label">
@@ -291,7 +298,7 @@
   </template>
 
   <template id="task-modal">
-    <div class="modal task-modal" style="display: flex">
+    <div class="modal task-modal">
       <div class="modal-background"></div>
       <div class="modal-card task-modal__card">
         <header class="modal-card-head">
