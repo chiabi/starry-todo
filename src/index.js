@@ -340,7 +340,7 @@ async function projectContent(parentEl) {
       }
     })
   })
-  
+
   // 라벨 소팅 
   const labelSortElState = {
     state: false,
@@ -404,7 +404,7 @@ async function projectContent(parentEl) {
     e.preventDefault()
     listEl.textContent = ''
     const keyword = searchElInput.value
-    keywordSearch(listEl, item.title.includes(keyword))
+    keywordSearch(listEl, item => item.title.includes(keyword))
   })
   searchElInput.addEventListener('keyup', e => {
     if (e.target.value) {
