@@ -125,6 +125,25 @@ body {
   padding: 0 1em;
   justify-content: center;
 }
+.projects-search {
+  &__input {
+    position: relative;
+    .input {
+      padding-right: 30px;
+    }
+    .delete {
+      display: none;
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      z-index: 777;
+      transform: translateY(-50%);
+      .projects-search--no-empty & {
+        display: block;
+      }
+    }
+  }
+}
 .task-sort {
   position: relative;
   margin-left: 0.5em;
@@ -202,6 +221,11 @@ body {
   }
 }
 
+.project-list-wrap {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+}
 .project-list {
   flex: auto;
   display: flex;

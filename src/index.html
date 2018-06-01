@@ -97,8 +97,9 @@
       <div class="project-utils">
         <form class="projects-search-form">
           <div class="field has-addons projects-search">
-            <div class="control">
-              <input type="text" class="input" placeholder="search task name" aria-label="search task form">
+            <div class="control projects-search__input">
+              <input name="keyword" type="text" class="input" placeholder="search task name" aria-label="search task form" autocomplete="off">
+              <button type="button" class="delete"></button>
             </div>
             <div class="control">
               <button class="button is-primary">search</button>
@@ -137,8 +138,12 @@
         <input type="text" name="title" class="input project-write-form__input" placeholder="new project" aria-label="project title" autocomplete="off">
       </form>
 
-      <section class="project-list"></section>
+      <div class="project-list-wrap"></div>
     </div>
+  </template>
+
+  <template id="project-list">
+    <div class="project-list"></div>
   </template>
 
   <template id="project-item">

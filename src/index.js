@@ -16,6 +16,7 @@ const templates = {
   loading:        document.querySelector('#loading').content,
   index:          document.querySelector('#index').content,
   projectContent: document.querySelector('#project-content').content,
+  projectList:    document.querySelector('#project-list').content,
   projectItem:    document.querySelector('#project-item').content,
   dateTerm:       document.querySelector('#date-term').content,
   taskItem:       document.querySelector('#task-item').content,
@@ -211,11 +212,13 @@ function inputCompleteBlur(el) {
  */
 async function projectContent(parentEl) {
   const fragment = deepCopyFragment(templates.projectContent)
-  const listEl = fragment.querySelector('.project-list')
+  const listEl = fragment.querySelector('.project-list-wrap')
   const formEl = fragment.querySelector('.project-write-form')
   const btnAddEl = formEl.querySelector('.projects__btn-add-project')
   const inputEl = formEl.querySelector('.project-write-form__input')
   const sortEl = fragment.querySelector('.task-sort')
+  const searchEl = fragment.querySelector('.projects-search-form')
+  const searchElInput = searchEl.querySelector('.input')
 
   btnAddEl.addEventListener('click', e => {
     e.preventDefault()
@@ -258,39 +261,55 @@ async function projectContent(parentEl) {
   sortEl.querySelector('.task-sort__btn-open').addEventListener('click', function() {
     if(!sortElState.state) {
       sortElState.open()
+      // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
+      searchEl.classList.remove('projects-search--no-empty')
+      searchElInput.value = ''
     } else {
       sortElState.close()
     }
   })
 
-  const res = await starryAPI.get('/projects')
-  for (const data of res.data) {
-    await projectItem(listEl, data, () => true)
-  }
+  await projectList(listEl, async content => {
+    const res = await starryAPI.get('/projects')
+    for (const data of res.data) {
+      await projectItem(content, data, () => true)
+    }
+  })
 
+  // 완료 여부로 task 정렬
   sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
-    el.addEventListener('change', async function() {
+    el.addEventListener('change', async () => {
       if(el.checked) {
+        const res = await starryAPI.get('/projects?_embed=tasks')
         switch(el.value) {
           case 'complete' : 
-            listEl.textContent = ''
-            for (const data of res.data) {
-              await withLoading(projectItem(listEl, data, data => data.complete))
-            }
+            await projectList(listEl, async content => {
+              const filter = item => item.complete
+              for (const data of res.data) {
+                if(data.tasks.some(filter)) {
+                  await withLoading(projectItem(content, data, filter))
+                }
+              }
+            })
             sortElState.close()
             break
           case 'incomplete': 
-            listEl.textContent = ''
-            for (const data of res.data) {
-              await withLoading(projectItem(listEl, data, data => !data.complete))
-            }
+            await projectList(listEl, async content => {
+              const filter = item => !item.complete
+              for (const data of res.data) {
+                if(data.tasks.some(filter)) {
+                  await withLoading(projectItem(content, data, filter))
+                }
+              }
+            })
             sortElState.close()
             break
           default: 
-            listEl.textContent = '' 
-            for (const data of res.data) {
-              await withLoading(projectItem(listEl, data, data => true))
-            }
+            await projectList(listEl, async content => {
+              for (const data of res.data) {
+                await withLoading(projectItem(content, data, data => true))
+              }
+            })
             sortElState.close()
             break
         }
@@ -298,7 +317,46 @@ async function projectContent(parentEl) {
     })
   })
 
+  // 작업 검색
+  searchEl.addEventListener('submit', async e => {
+    e.preventDefault()
+    listEl.textContent = ''
+    const keyword = searchElInput.value
+    await projectList(listEl, async content => {
+      const res = await starryAPI.get('/projects?_embed=tasks')
+      for (const data of res.data) {
+        const filter = item => item.title.includes(keyword)
+        if(data.tasks.some(filter)) {
+          await withLoading(projectItem(content, data, filter))
+        }
+      }
+    })
+  })
+  searchElInput.addEventListener('keyup', e => {
+    if (e.target.value) {
+      searchEl.classList.add('projects-search--no-empty')
+    } else {
+      searchEl.classList.remove('projects-search--no-empty')
+    }
+  })
+  searchEl.querySelector('.delete').addEventListener('click', e => {
+    searchElInput.value = ''
+    searchElInput.focus()
+  }) 
   render(fragment, parentEl, false)
+}
+
+async function projectList(parentEl, func) {
+  const fragment = deepCopyFragment(templates.projectList)
+  const content = fragment.querySelector('.project-list')
+
+  await func(content)
+  // const res = await starryAPI.get('/projects')
+  // for (const data of res.data) {
+  //   await projectItem(content, data, filter)
+  // }
+
+  render(fragment, parentEl)
 }
 
 /* ------------------------
@@ -306,6 +364,7 @@ async function projectContent(parentEl) {
  * ------------------------
  * parentEl: render될때 기준이 되는 부모 엘리먼트
  * projectObj: 프로젝트 title, id 정보를 담은 객체
+ * filter: task 필터 함수
  */
 async function projectItem(parentEl, projectObj, filter) {
   const {title, id} = projectObj;
@@ -346,6 +405,7 @@ async function projectItem(parentEl, projectObj, filter) {
   titleInputEl.addEventListener('keyup', e => {
     titleShadowEl.textContent = e.target.value
   })
+
   inputCompleteBlur(titleInputEl)
   titleInputEl.addEventListener('blur', async e => {
     const payload = {
@@ -359,8 +419,8 @@ async function projectItem(parentEl, projectObj, filter) {
     }
   })
 
-  btnAddEl.addEventListener('click', e => {
-    withLoading(taskWriteModal(listEl, {projectId: id}, addTask))
+  btnAddEl.addEventListener('click', async e => {
+    await withLoading(taskWriteModal(listEl, {projectId: id}, addTask))
   })
   parentEl.prepend(fragment)
 }
@@ -395,6 +455,7 @@ async function labelItem(parentEl, labelObj, func) {
       break
     default :
       label.classList.add('is-danger')
+      break
   }
   label.textContent = body
   if(func) func(label)
