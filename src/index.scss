@@ -2,6 +2,20 @@
 @import '../node_modules/bulma';
 @import '../node_modules/pikaday/scss/pikaday';
 
+// bluma primary color reset
+$primary: #aa00ff;
+$primary-invert: findColorInvert($primary);
+.button.is-primary {
+  background-color: $primary;
+  color: $primary-invert;
+  &:hover,
+  &.is-hovered {
+    background-color: darken($primary, 2.5%)
+  }
+}
+.tag:not(body).is-primary {
+  background-color: $primary;
+}
 $main-font: 'Gugi', cursive;
 @mixin full {
   width: 100%;
