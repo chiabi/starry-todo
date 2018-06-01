@@ -106,23 +106,25 @@
           </div>
         </form>
         <div class="task-sort">
-          <button class="task-sort__btn-open">정렬</button>
-          <div class="task-sort__body">
-            <div class="control">
-              <label class="radio" for="incompleteTasks">
-                <input type="radio" name="tasksort" id="incompleteTasks" checked> incomplete Tasks
-              </label>
-            </div>
-            <div class="control">
-              <label class="radio" for="completeTasks">
-                <input type="radio" name="tasksort" id="completeTasks"> completed Tasks
-              </label>
-            </div>
-            <div class="control">
-              <label class="radio" for="allTasks">
-                <input type="radio" name="tasksort" id="allTasks"> All Tasks
-              </label>
-            </div>
+          <button class="button is-info task-sort__btn-open">
+            <i class="fas fa-sliders-h"></i>
+          </button>
+          <div class="box task-sort__body">
+            <label class="task-sort__label">
+              <input type="radio" class="task-sort__radio" name="tasksort" value="all" checked> 
+              <span class="radiomark"></span>
+              <span>All Tasks</span>
+            </label>
+            <label class="task-sort__label">
+              <input type="radio" class="task-sort__radio" name="tasksort" value="incomplete">
+              <span class="radiomark"></span>
+              <span>Incomplete Tasks</span>
+            </label>
+            <label class="task-sort__label">
+              <input type="radio" class="task-sort__radio" name="tasksort" value="complete">
+              <span class="radiomark"></span>
+              <span>Completed Tasks</span>
+            </label>
           </div>
         </div>
       </div>

@@ -215,6 +215,7 @@ async function projectContent(parentEl) {
   const formEl = fragment.querySelector('.project-write-form')
   const btnAddEl = formEl.querySelector('.projects__btn-add-project')
   const inputEl = formEl.querySelector('.project-write-form__input')
+  const sortEl = fragment.querySelector('.task-sort')
 
   btnAddEl.addEventListener('click', e => {
     e.preventDefault()
@@ -243,11 +244,60 @@ async function projectContent(parentEl) {
     }
   })
 
+  const sortElState = {
+    state: false,
+    open() {
+      sortEl.classList.add('task-sort--open')
+      this.state = true
+    },
+    close() {
+      sortEl.classList.remove('task-sort--open')
+      this.state = false
+    }
+  }
+  sortEl.querySelector('.task-sort__btn-open').addEventListener('click', function() {
+    if(!sortElState.state) {
+      sortElState.open()
+    } else {
+      sortElState.close()
+    }
+  })
+
   const res = await starryAPI.get('/projects')
   for (const data of res.data) {
-    // 여기에 await 붙이니까 새로고침시 리스트 뒤죽박죽되는 문제 해결되었음
-    await projectItem(listEl, data)
+    await projectItem(listEl, data, () => true)
   }
+
+  sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
+    el.addEventListener('change', async function() {
+      if(el.checked) {
+        switch(el.value) {
+          case 'complete' : 
+            listEl.textContent = ''
+            for (const data of res.data) {
+              await withLoading(projectItem(listEl, data, data => data.complete))
+            }
+            sortElState.close()
+            break
+          case 'incomplete': 
+            listEl.textContent = ''
+            for (const data of res.data) {
+              await withLoading(projectItem(listEl, data, data => !data.complete))
+            }
+            sortElState.close()
+            break
+          default: 
+            listEl.textContent = '' 
+            for (const data of res.data) {
+              await withLoading(projectItem(listEl, data, data => true))
+            }
+            sortElState.close()
+            break
+        }
+      }
+    })
+  })
+
   render(fragment, parentEl, false)
 }
 
@@ -257,7 +307,7 @@ async function projectContent(parentEl) {
  * parentEl: render될때 기준이 되는 부모 엘리먼트
  * projectObj: 프로젝트 title, id 정보를 담은 객체
  */
-async function projectItem(parentEl, projectObj) {
+async function projectItem(parentEl, projectObj, filter) {
   const {title, id} = projectObj;
   const fragment = deepCopyFragment(templates.projectItem)
   const listEl = fragment.querySelector('.task-list')
@@ -274,7 +324,9 @@ async function projectItem(parentEl, projectObj) {
   // [GET] - render task item
   const res = await starryAPI.get(`/projects/${id}/tasks`)
   for (const data of res.data) {
-    await taskItem(listEl, data)
+    if(filter(data)) {
+      await taskItem(listEl, data)
+    }
   }
 
   // [DELETE] - project item
