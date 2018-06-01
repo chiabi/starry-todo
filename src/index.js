@@ -252,7 +252,7 @@ async function projectContent(parentEl) {
     }
   })
 
-  // [COMPLETE SORT] 
+  // 완료 여부 소팅
   const sortElState = {
     state: false,
     open() {
@@ -279,47 +279,24 @@ async function projectContent(parentEl) {
     sortBtnEl.focus()
   })
 
-  // [LABEL SORT] 
-  const labelSortElState = {
-    state: false,
-    open() {
-      labelSortEl.classList.add('label-sort--open')
-      this.state = true
-    },
-    close() {
-      labelSortEl.classList.remove('label-sort--open')
-      this.state = false
-    }
+  function keywordSearch (parentEl, predicate) {
+    projectList(parentEl, async content => {
+      const res = await starryAPI.get('/projects?_embed=tasks')
+      for (const data of res.data) {
+        let filter;
+        if(sortState.value === 'complete') {
+          filter = item => predicate(item) && item.complete
+        } else if (sortState.value === 'incomplete') {
+          filter = item => predicate(item) && !item.complete
+        } else {
+          filter = item => predicate(item)
+        }
+        if(data.tasks.some(filter)) {
+          await withLoading(projectItem(content, data, filter))
+        }
+      }
+    })
   }
-
-  const labelSortBtnEl = labelSortEl.querySelector('.label-sort__btn-open')
-  const labelSortBodyEl = labelSortEl.querySelector('.label-sort__body')
-  const labelSortListEl = labelSortEl.querySelector('.label-sort__list')
-
-  labelSortBtnEl.addEventListener('click', async e => {
-    labelSortElState.open()
-    // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
-    searchEl.classList.remove('projects-search--no-empty')
-    searchElInput.value = ''
-    // 이 부분은 별도의 템플릿으로 개선되면 수정
-    labelSortListEl.textContent = ''
-    const res = await starryAPI.get('/labels')
-    for (const data of res.data) {
-      await labelItem(labelSortListEl, data, () => {})
-    }
-  })
-
-  labelSortBodyEl.querySelector('.delete').addEventListener('click', () => {
-    labelSortElState.close()
-    labelSortBtnEl.focus()
-  })
-
-  await projectList(listEl, async content => {
-    const res = await starryAPI.get('/projects')
-    for (const data of res.data) {
-      await projectItem(content, data, () => true)
-    }
-  })
 
   const sortState = {};
   // 완료 여부로 task 정렬
@@ -363,28 +340,71 @@ async function projectContent(parentEl) {
       }
     })
   })
+  
+  // 라벨 소팅 
+  const labelSortElState = {
+    state: false,
+    open() {
+      labelSortEl.classList.add('label-sort--open')
+      this.state = true
+    },
+    close() {
+      labelSortEl.classList.remove('label-sort--open')
+      this.state = false
+    }
+  }
+  const labelSortBtnEl = labelSortEl.querySelector('.label-sort__btn-open')
+  const labelSortBodyEl = labelSortEl.querySelector('.label-sort__body')
+  const labelSortListEl = labelSortEl.querySelector('.label-sort__list')
+  let labelRes;
+  labelSortBtnEl.addEventListener('click', async e => {
+    labelSortElState.open()
+    // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
+    searchEl.classList.remove('projects-search--no-empty')
+    searchElInput.value = ''
+    // 이 부분은 별도의 템플릿으로 개선되면 수정
+    labelSortListEl.textContent = ''
+    labelRes = await starryAPI.get('/labels')
+    for (const data of labelRes.data) {
+      const {body, id} = data
+      await labelItem(labelSortListEl, data, item => {
+        item.addEventListener('click', e => {
+          keywordSearch(listEl, item => item.labelId === id)
+          labelSortElState.close()
+        })
+      })
+    }
+  })
+
+  labelSortEl.querySelector('.label-sort__search').addEventListener('submit', e => {
+    e.preventDefault();
+    labelSortListEl.textContent = ''
+    const labelKeyword = e.target.label.value.toLowerCase()
+    for (const data of labelRes.data) {
+      const {body, id} = data
+      if(body.toLowerCase().includes(labelKeyword)) {
+        // 라벨 자동완성 목록에서 생성되는 라벨
+        labelItem(labelSortListEl, data, item => {
+          item.addEventListener('click', e => {
+            keywordSearch(listEl, item => item.labelId === id)
+            labelSortElState.close()
+          })
+        })
+      }
+    }
+  })
+
+  labelSortBodyEl.querySelector('.delete').addEventListener('click', () => {
+    labelSortElState.close()
+    labelSortBtnEl.focus()
+  })
 
   // 작업 검색
   searchEl.addEventListener('submit', async e => {
     e.preventDefault()
     listEl.textContent = ''
     const keyword = searchElInput.value
-    await projectList(listEl, async content => {
-      const res = await starryAPI.get('/projects?_embed=tasks')
-      for (const data of res.data) {
-        let filter;
-        if(sortState.value === 'complete') {
-          filter = item => item.title.includes(keyword) && item.complete
-        } else if (sortState.value === 'incomplete') {
-          filter = item => item.title.includes(keyword) && !item.complete
-        } else {
-          filter = item => item.title.includes(keyword)
-        }
-        if(data.tasks.some(filter)) {
-          await withLoading(projectItem(content, data, filter))
-        }
-      }
-    })
+    keywordSearch(listEl, item.title.includes(keyword))
   })
   searchElInput.addEventListener('keyup', e => {
     if (e.target.value) {
@@ -403,6 +423,13 @@ async function projectContent(parentEl) {
       }
     })
   }) 
+
+  await projectList(listEl, async content => {
+    const res = await starryAPI.get('/projects')
+    for (const data of res.data) {
+      await projectItem(content, data, () => true)
+    }
+  })
   render(fragment, parentEl, false)
 }
 
@@ -626,6 +653,7 @@ async function taskWriteModal(listEl, taskObj, func) {
   function addDeleteButton(item) {
     const button = document.createElement('button')
     button.classList.add('delete')
+    button.setAttribute('type', 'button')
     button.addEventListener('click', e => {
       e.preventDefault()
       item.remove()
