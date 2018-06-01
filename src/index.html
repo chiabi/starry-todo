@@ -86,6 +86,7 @@
   <template id="index">
     <header class="header">
       <h1 class="header__logo">Starry <span>todo</span></h1>
+      <p class="account"><span>welcome!</span> <span class="account__user-name"></span></p>
       <button class="header__btn-logout">Log out</button>
     </header>
     <div class="contents"></div>
@@ -95,22 +96,11 @@
     <div class="project-content">
       <div class="project-notification"></div>
       <div class="project-utils">
-        <form class="projects-search-form">
-          <div class="field has-addons projects-search">
-            <div class="control projects-search__input">
-              <input name="keyword" type="text" class="input" placeholder="search task name" aria-label="search task form" autocomplete="off">
-              <button type="button" class="delete"></button>
-            </div>
-            <div class="control">
-              <button class="button is-primary">search</button>
-            </div>
-          </div>
-        </form>
         <div class="task-sort">
           <button class="button is-info task-sort__btn-open">
             <i class="fas fa-sliders-h"></i>
           </button>
-          <div class="box task-sort__body">
+          <div class="box task-sort__body" tabindex="0">
             <label class="task-sort__label">
               <input type="radio" class="task-sort__radio" name="tasksort" value="all" checked> 
               <span class="radiomark"></span>
@@ -127,6 +117,49 @@
               <span>Completed Tasks</span>
             </label>
           </div>
+        </div>
+        <form class="projects-search-form">
+          <div class="field has-addons projects-search">
+            <div class="control projects-search__input">
+              <input name="keyword" type="text" class="input" placeholder="search task name" aria-label="search task form" autocomplete="off">
+              <button type="button" class="delete"></button>
+            </div>
+            <div class="control">
+              <button class="button is-primary">search</button>
+            </div>
+          </div>
+        </form>
+        <div class="label-sort">
+          <button class="button is-danger label-sort__btn-open" title="라벨검색 레이어 열기">
+            <i class="fa fa-tag"></i>
+          </button>
+          <section class="content label-sort__body">
+            <form class="label-sort__search">
+              <h2>Label Search</h2>
+              <div class="field has-addons has-addons-fullwidth">
+                <div class="control">
+                  <input name="label" type="text" class="input" autocomplete="off">
+                </div>
+                <div class="control">
+                  <button class="button is-primary" title="검색">
+                    <i class="fas fa-search"></i> 
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div class="label-sort__list">
+              <!-- <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span>
+              <span class="tag is-danger">라벨</span> -->
+            </div>
+            <button type="button" class="delete" title="라벨검색 레이어 닫기"></button>
+          </section>
         </div>
       </div>
 

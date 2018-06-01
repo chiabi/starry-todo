@@ -168,8 +168,11 @@ async function withLoading(promise, parentEl = bodyEl) {
 async function indexPage() {
   const fragment = deepCopyFragment(templates.index)
   const btnLogout = fragment.querySelector('.header__btn-logout')
+  const accountUser = fragment.querySelector('.account__user-name')
   const contentEl = fragment.querySelector('.contents');
 
+  const res = await starryAPI.get('/me')
+  accountUser.textContent = res.data.username
   btnLogout.addEventListener('click', e => {
     logout()
     loginPage()
@@ -219,6 +222,7 @@ async function projectContent(parentEl) {
   const sortEl = fragment.querySelector('.task-sort')
   const searchEl = fragment.querySelector('.projects-search-form')
   const searchElInput = searchEl.querySelector('.input')
+  const labelSortEl = fragment.querySelector('.label-sort')
 
   btnAddEl.addEventListener('click', e => {
     e.preventDefault()
@@ -236,7 +240,8 @@ async function projectContent(parentEl) {
     if(payload.title) {
       try {
         const res = await starryAPI.post('/projects', payload)
-        projectItem(listEl, res.data)
+        const content = document.querySelector('.project-list')
+        projectItem(content, res.data)
         formEl.classList.remove('project-write-form--writing')
         inputEl.value = ''
       } catch (e) {
@@ -247,6 +252,7 @@ async function projectContent(parentEl) {
     }
   })
 
+  // [COMPLETE SORT] 
   const sortElState = {
     state: false,
     open() {
@@ -258,15 +264,54 @@ async function projectContent(parentEl) {
       this.state = false
     }
   }
-  sortEl.querySelector('.task-sort__btn-open').addEventListener('click', function() {
-    if(!sortElState.state) {
-      sortElState.open()
-      // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
-      searchEl.classList.remove('projects-search--no-empty')
-      searchElInput.value = ''
-    } else {
-      sortElState.close()
+
+  const sortBtnEl = sortEl.querySelector('.task-sort__btn-open')
+  const sortBodyEl = sortEl.querySelector('.task-sort__body')
+  sortBtnEl.addEventListener('click', () => {
+    sortElState.open()
+    sortBodyEl.focus()
+    // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
+    searchEl.classList.remove('projects-search--no-empty')
+    searchElInput.value = ''
+  })
+  sortBodyEl.addEventListener('blur', () => {
+    sortElState.close()
+    sortBtnEl.focus()
+  })
+
+  // [LABEL SORT] 
+  const labelSortElState = {
+    state: false,
+    open() {
+      labelSortEl.classList.add('label-sort--open')
+      this.state = true
+    },
+    close() {
+      labelSortEl.classList.remove('label-sort--open')
+      this.state = false
     }
+  }
+
+  const labelSortBtnEl = labelSortEl.querySelector('.label-sort__btn-open')
+  const labelSortBodyEl = labelSortEl.querySelector('.label-sort__body')
+  const labelSortListEl = labelSortEl.querySelector('.label-sort__list')
+
+  labelSortBtnEl.addEventListener('click', async e => {
+    labelSortElState.open()
+    // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
+    searchEl.classList.remove('projects-search--no-empty')
+    searchElInput.value = ''
+    // 이 부분은 별도의 템플릿으로 개선되면 수정
+    labelSortListEl.textContent = ''
+    const res = await starryAPI.get('/labels')
+    for (const data of res.data) {
+      await labelItem(labelSortListEl, data, () => {})
+    }
+  })
+
+  labelSortBodyEl.querySelector('.delete').addEventListener('click', () => {
+    labelSortElState.close()
+    labelSortBtnEl.focus()
   })
 
   await projectList(listEl, async content => {
@@ -276,12 +321,14 @@ async function projectContent(parentEl) {
     }
   })
 
+  const sortState = {};
   // 완료 여부로 task 정렬
   sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
     el.addEventListener('change', async () => {
       if(el.checked) {
         const res = await starryAPI.get('/projects?_embed=tasks')
-        switch(el.value) {
+        sortState.value = el.value
+        switch(sortState.value) {
           case 'complete' : 
             await projectList(listEl, async content => {
               const filter = item => item.complete
@@ -325,7 +372,14 @@ async function projectContent(parentEl) {
     await projectList(listEl, async content => {
       const res = await starryAPI.get('/projects?_embed=tasks')
       for (const data of res.data) {
-        const filter = item => item.title.includes(keyword)
+        let filter;
+        if(sortState.value === 'complete') {
+          filter = item => item.title.includes(keyword) && item.complete
+        } else if (sortState.value === 'incomplete') {
+          filter = item => item.title.includes(keyword) && !item.complete
+        } else {
+          filter = item => item.title.includes(keyword)
+        }
         if(data.tasks.some(filter)) {
           await withLoading(projectItem(content, data, filter))
         }
@@ -339,9 +393,15 @@ async function projectContent(parentEl) {
       searchEl.classList.remove('projects-search--no-empty')
     }
   })
-  searchEl.querySelector('.delete').addEventListener('click', e => {
+  searchEl.querySelector('.delete').addEventListener('click', async e => {
     searchElInput.value = ''
     searchElInput.focus()
+    await projectList(listEl, async content => {
+      const res = await starryAPI.get('/projects')
+      for (const data of res.data) {
+        await withLoading(projectItem(content, data, () => true))
+      }
+    })
   }) 
   render(fragment, parentEl, false)
 }
@@ -351,10 +411,6 @@ async function projectList(parentEl, func) {
   const content = fragment.querySelector('.project-list')
 
   await func(content)
-  // const res = await starryAPI.get('/projects')
-  // for (const data of res.data) {
-  //   await projectItem(content, data, filter)
-  // }
 
   render(fragment, parentEl)
 }
@@ -655,7 +711,6 @@ async function taskWriteModal(listEl, taskObj, func) {
     field: formEl.querySelector('#dueDatePicker'),
     ...datepicker
   })
-
   formEl.addEventListener('submit', async e => {
     e.preventDefault()
     const payload = {
@@ -742,7 +797,8 @@ async function activityItem(parentEl, activityObj) {
       bodyInputEl.value = body
     }
   })
-  render(fragment, parentEl, false)
+  parentEl.prepend(fragment)
+  // render(fragment, parentEl, false)
 }
 
 /* ------------------------
