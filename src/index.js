@@ -433,6 +433,12 @@ async function projectContent(parentEl) {
   render(fragment, parentEl, false)
 }
 
+/* ------------------------
+ * Project List Component
+ * ------------------------
+ * parentEl: render될때 기준이 되는 부모 엘리먼트
+ * func: 렌더되는 `.project-list`를 인자로 하여 리스트 렌더 전에 실행시킬 함수
+ */
 async function projectList(parentEl, func) {
   const fragment = deepCopyFragment(templates.projectList)
   const content = fragment.querySelector('.project-list')
@@ -447,7 +453,7 @@ async function projectList(parentEl, func) {
  * ------------------------
  * parentEl: render될때 기준이 되는 부모 엘리먼트
  * projectObj: 프로젝트 title, id 정보를 담은 객체
- * filter: task 필터 함수
+ * filter: GET 응답 data를 인자로 받음. taskItem 호출 전 조건으로 던질 filter 함수
  */
 async function projectItem(parentEl, projectObj, filter) {
   const {title, id} = projectObj;
