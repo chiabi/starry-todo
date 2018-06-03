@@ -279,7 +279,7 @@ async function projectContent(parentEl) {
     sortBtnEl.focus()
   })
 
-  function keywordSearch (parentEl, predicate) {
+  function taskSearch(parentEl, predicate) {
     projectList(parentEl, async content => {
       const res = await starryAPI.get('/projects?_embed=tasks')
       for (const data of res.data) {
@@ -303,27 +303,8 @@ async function projectContent(parentEl) {
   sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
     el.addEventListener('click', async () => {
       if(el.checked) {
-        const res = await starryAPI.get('/projects?_embed=tasks')
         sortState.value = el.value
-        let filter;
-        switch(sortState.value) {
-          case 'complete' : 
-            filter = item => item.complete
-            break
-          case 'incomplete': 
-            filter = item => !item.complete
-            break
-          default: 
-            filter = item => true
-            break
-        }
-        await projectList(listEl, async content => {
-          for (const data of res.data) {
-            if(data.tasks.some(filter)) {
-              await withLoading(projectItem(content, data, filter))
-            }
-          }
-        })
+        taskSearch(listEl, item => true)
         sortElState.close()
       }
     })
@@ -357,7 +338,7 @@ async function projectContent(parentEl) {
       const {body, id} = data
       await labelItem(labelSortListEl, data, item => {
         item.addEventListener('click', e => {
-          keywordSearch(listEl, item => item.labelId === id)
+          taskSearch(listEl, item => item.labelId === id)
           labelSortElState.close()
         })
       })
@@ -374,7 +355,7 @@ async function projectContent(parentEl) {
         // 라벨 자동완성 목록에서 생성되는 라벨
         labelItem(labelSortListEl, data, item => {
           item.addEventListener('click', e => {
-            keywordSearch(listEl, item => item.labelId === id)
+            taskSearch(listEl, item => item.labelId === id)
             labelSortElState.close()
           })
         })
@@ -392,7 +373,7 @@ async function projectContent(parentEl) {
     e.preventDefault()
     listEl.textContent = ''
     const keyword = searchElInput.value
-    keywordSearch(listEl, item => item.title.includes(keyword))
+    taskSearch(listEl, item => item.title.includes(keyword))
   })
   searchElInput.addEventListener('keyup', e => {
     if (e.target.value) {
@@ -404,12 +385,7 @@ async function projectContent(parentEl) {
   searchEl.querySelector('.delete').addEventListener('click', async e => {
     searchElInput.value = ''
     searchElInput.focus()
-    await projectList(listEl, async content => {
-      const res = await starryAPI.get('/projects')
-      for (const data of res.data) {
-        await withLoading(projectItem(content, data, () => true))
-      }
-    })
+    taskSearch(listEl, item => true)
   }) 
 
   await projectList(listEl, async content => {
