@@ -177,7 +177,7 @@ body {
 }
 .project-utils {
   display: flex;
-  margin: 2em auto;
+  margin: 2em 1em;
   justify-content: center;
 }
 .projects-search {
@@ -210,9 +210,6 @@ body {
     left: -1em;
     z-index: 2;
     background-color: #fff;
-    &:focus {
-      outline: none;
-    }
     .task-sort--open & {
       display: flex;
       flex-direction: column;
@@ -225,7 +222,10 @@ body {
     height: 25px;
     cursor: pointer;
     &:hover, &:focus {
-      color: $blue
+      color: $blue;
+      & .radiomark {
+        border-color: $blue;
+      }
     }
     &:not(:first-child) {
       margin-top: 1em;
@@ -244,6 +244,14 @@ body {
   &__radio {
     position: absolute;
     opacity: 0;
+    &:focus {
+      & ~ .radiomark {
+        border-color: $blue;
+      }
+      & ~ span {
+        color: $blue;
+      }
+    }
     &:checked {
       & ~ .radiomark {
         border-color: $blue;
@@ -299,13 +307,21 @@ body {
 }
 
 .project-write-form {
-  display: block;
-  margin: 0 auto 1em;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center; 
+  margin: 0 1em 1em;
   .button {
-    width: 350px;
+    max-width: 350px;
+    width: 100%;
+    flex: 0 0 auto;
+    margin: 0 1em;
   }
   .input {
-    width: 350px;
+    max-width: 350px;
+    width: 100%;
+    flex: 0 0 auto;
     display: none;
   }
   &--writing {
@@ -349,6 +365,7 @@ body {
   @include for-mobile {
     flex: 0 0 auto;
     max-width: 100%;
+    margin-right: 0;
   }
   &.box {
     margin-bottom: 1.5em;

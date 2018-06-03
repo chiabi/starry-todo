@@ -265,20 +265,9 @@ async function projectContent(parentEl) {
     }
   }
 
-  const sortBtnEl = sortEl.querySelector('.task-sort__btn-open')
-  const sortBodyEl = sortEl.querySelector('.task-sort__body')
-  sortBtnEl.addEventListener('click', () => {
-    sortElState.open()
-    sortBodyEl.focus()
-    // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
-    searchEl.classList.remove('projects-search--no-empty')
-    searchElInput.value = ''
-  })
-  sortBodyEl.addEventListener('blur', () => {
-    sortElState.close()
-    sortBtnEl.focus()
-  })
-
+  const sortState = {
+    value: 'all'
+  };
   function taskSearch(parentEl, predicate) {
     projectList(parentEl, async content => {
       const res = await starryAPI.get('/projects?_embed=tasks')
@@ -298,14 +287,51 @@ async function projectContent(parentEl) {
     })
   }
 
-  const sortState = {};
+  const sortBtnEl = sortEl.querySelector('.task-sort__btn-open')
+  const sortBodyEl = sortEl.querySelector('.task-sort__body')
+  const sortRadioEls = sortBodyEl.querySelectorAll('.task-sort__radio')
+  sortBtnEl.addEventListener('click', () => {
+    if(!sortElState.state) {
+      sortElState.open()
+      // 키보드 지원
+      sortRadioEls.forEach(el => {
+        if(el.value === sortState.value) el.focus()
+      })
+      // 중복 조건 정렬 지원하게 만들 수 있다면 이 부분 삭제
+      searchEl.classList.remove('projects-search--no-empty')
+      searchElInput.value = ''
+    } else {
+      sortElState.close()
+    }
+  })
+  
+  const completeSorting = el => {
+    sortState.value = el.value
+    taskSearch(listEl, item => true)
+    sortElState.close()
+  }
   // 완료 여부로 task 정렬
-  sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
+  sortRadioEls.forEach((el, index, arr) => {
+    el.addEventListener('keydown', e => {
+      e.preventDefault();
+      if(e.keyCode === 38) {
+        // up arrow
+        arr[index - 1] ? arr[index - 1].focus() : arr[arr.length - 1].focus();
+      } else if(e.keyCode === 40) {
+        // down arrow
+        arr[index + 1] ? arr[index + 1].focus() : arr[0].focus();
+      } else if(e.keyCode === 32 || e.keyCode === 13) {
+        // space 
+        el.setAttribute('checked', '')
+        completeSorting(el)
+      } else if(e.keyCode === 9) {
+        sortElState.close()
+        sortBtnEl.focus()
+      }
+    })
     el.addEventListener('click', async () => {
       if(el.checked) {
-        sortState.value = el.value
-        taskSearch(listEl, item => true)
-        sortElState.close()
+        completeSorting(el)
       }
     })
   })
