@@ -301,42 +301,30 @@ async function projectContent(parentEl) {
   const sortState = {};
   // 완료 여부로 task 정렬
   sortEl.querySelectorAll('.task-sort__radio').forEach(el => {
-    el.addEventListener('change', async () => {
+    el.addEventListener('click', async () => {
       if(el.checked) {
         const res = await starryAPI.get('/projects?_embed=tasks')
         sortState.value = el.value
+        let filter;
         switch(sortState.value) {
           case 'complete' : 
-            await projectList(listEl, async content => {
-              const filter = item => item.complete
-              for (const data of res.data) {
-                if(data.tasks.some(filter)) {
-                  await withLoading(projectItem(content, data, filter))
-                }
-              }
-            })
-            sortElState.close()
+            filter = item => item.complete
             break
           case 'incomplete': 
-            await projectList(listEl, async content => {
-              const filter = item => !item.complete
-              for (const data of res.data) {
-                if(data.tasks.some(filter)) {
-                  await withLoading(projectItem(content, data, filter))
-                }
-              }
-            })
-            sortElState.close()
+            filter = item => !item.complete
             break
           default: 
-            await projectList(listEl, async content => {
-              for (const data of res.data) {
-                await withLoading(projectItem(content, data, data => true))
-              }
-            })
-            sortElState.close()
+            filter = item => true
             break
         }
+        await projectList(listEl, async content => {
+          for (const data of res.data) {
+            if(data.tasks.some(filter)) {
+              await withLoading(projectItem(content, data, filter))
+            }
+          }
+        })
+        sortElState.close()
       }
     })
   })

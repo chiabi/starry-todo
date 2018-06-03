@@ -192,6 +192,10 @@ body {
     position: relative;
     padding-left: 35px;
     height: 25px;
+    cursor: pointer;
+    &:hover, &:focus {
+      color: $blue
+    }
     &:not(:first-child) {
       margin-top: 1em;
     }
