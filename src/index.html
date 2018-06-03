@@ -19,6 +19,7 @@
 
   <template id="login">
     <div class="content sign-page">
+      <div class="sign-page__intro"><em>Starry todo</em> makes it easy to manage your projects</div>
       <div class="card">
         <h1 class="sign-page__title">Log in</h1>
         <form class="sign-form login-form">
@@ -41,15 +42,16 @@
             </div>
           </div>
           <div class="login-form__link">
-              Create an account. <button class="button is-text login-form__btn-link">Sign up</button>
+            Create an account. <button class="button is-text login-form__btn-link">Sign up</button>
           </div>
         </form>
       </div>
     </div>
   </template>
-
+  
   <template id="register">
     <div class="content sign-page">
+      <div class="sign-page__intro"><em>Starry todo</em> makes it easy to manage your projects</div>
       <div class="card">
         <h1 class="sign-page__title">Create new account</h1>
         <form class="sign-form register-form">
@@ -71,7 +73,7 @@
               <button class="button is-primary register-form__btn-submit">Submit</button>
             </div>
           </div>
-          <div class="login-form__link">
+          <div class="register-form__link">
               Sign in to your account. <button class="button is-text register-form__btn-link">Log in</button>
           </div>
         </form>
@@ -86,7 +88,7 @@
   <template id="index">
     <header class="header">
       <h1 class="header__logo">Starry <span>todo</span></h1>
-      <p class="account"><span>welcome!</span> <span class="account__user-name"></span></p>
+      <p class="account"><span class="account__message">welcome!</span> <span class="account__user-name"></span></p>
       <button class="header__btn-logout">Log out</button>
     </header>
     <div class="contents"></div>

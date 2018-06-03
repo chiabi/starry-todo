@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic');
+@import url('https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911');
 @import '../node_modules/bulma';
 @import '../node_modules/pikaday/scss/pikaday';
 
@@ -16,11 +16,21 @@ $primary-invert: findColorInvert($primary);
 .tag:not(body).is-primary {
   background-color: $primary;
 }
-$main-font: 'Gugi', cursive;
+$main-font: 'Goudy Bookletter 1911', serif;
+@mixin for-mobile {
+  @media all and (max-width: 640px) {
+    @content;
+  }
+}
 @mixin full {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  // @include for-mobile {
+  //   width: 100%;
+  //   height: auto;
+  //   overflow: visible;
+  // }
 }
 @mixin offscreen {
   width: 1px;
@@ -30,6 +40,7 @@ $main-font: 'Gugi', cursive;
   position: absolute;
   clip: rect(0, 0, 0, 0);
 }
+
 html {
   @include full;
 }
@@ -47,9 +58,21 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background: linear-gradient(45deg, $primary, darken($primary, 20%));
+  &__intro {
+    color: #fff;
+    font-size: 1.2em;
+    padding: 1em 0;
+    em {
+      font-family: $main-font;
+      font-size: 1.2em;
+      font-weight: bold;
+      font-style: normal;
+    }
+  }
   .card {
     padding: 2em 1em 1em;
     width: 100%;
@@ -61,7 +84,8 @@ body {
   }
 }
 
-.login-form {
+.login-form,
+.register-form {
   &__link {
     display: flex;
     align-items: center;
@@ -82,7 +106,11 @@ body {
   justify-content: space-between;
   background-image: linear-gradient(70deg, $primary, darken($primary, 10%));
   color: #fff;
+  @include for-mobile {
+    flex: 0 0 auto;
+  }
   &__logo {
+    font-weight: bold;
     font-family: $main-font;
     font-size: 1.5em;
   }
@@ -92,13 +120,17 @@ body {
     padding-right: 30px;
     justify-content: flex-end;
     align-items: center;
+    &__message {
+      @include for-mobile {
+        display: none;
+      }
+    }
     &__user-name {
       padding: 0.3em;
       text-decoration: underline;
     }
   }
   &__btn-logout {
-    font-family: $main-font;
     color: #fff;
     border: 0;
     border-radius: $radius;
@@ -145,7 +177,6 @@ body {
 }
 .project-utils {
   display: flex;
-  // width: 350px;
   margin: 2em auto;
   justify-content: center;
 }
@@ -299,6 +330,12 @@ body {
   width: 100%;
   overflow-x: scroll; 
   height: 1px;
+  @include for-mobile {
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    // height: auto;
+  }
 }
 
 .project-item {
@@ -309,6 +346,10 @@ body {
   margin-right: 0.5em;
   vertical-align: top;
   position: relative;
+  @include for-mobile {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
   &.box {
     margin-bottom: 1.5em;
   }
