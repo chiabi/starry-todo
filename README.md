@@ -1,5 +1,77 @@
 # Starry todo
 
+> 프론트엔드 개발 스쿨 중간 프로젝트로 만든 개인 프로젝트 관리 서비스입니다.  
+서비스는 https://starry-todo.netlify.com/ 에서 확인하실 수 있습니다.
+
+![starry todo screenshot](./starry-todo-screenshot.jpg)
+
+## 프로젝트 목표
+
+개인화 된 프로젝트 관리 서비스를 만들어 프로젝트 별로 작업을 생성 관리할 수 있도록 한다.
+
+## 서비스 기능
+
+### 1. 로그인/회원가입
+
+- 사용자는 이름/패스워드 등록을 통해 계정을 생성할 수 있다.
+- 회원가입시 이미 사용중인 이름은 사용할 수 없도록 안내 메시지를 제공한다.
+- 로그인시 이름이나 패스워드가 틀렸을 경우 안내 메시지를 제공한다.
+- 로그인 하지 않은 사용자는 프로젝트 페이지로 접근할 수 없고, 다른 사용자의 프로젝트에 접근할 수 없다.
+
+### 2. 프로젝트(project)
+
+- add your project 버튼을 클릭하면 프로젝트를 생성할 수 있다.
+- 프로젝트 이름은 수정할 수 있다.
+- 삭제 버튼을 클릭시 프로젝트를 삭제할 수 있다.
+
+### 3. 작업(task)
+
+- 프로젝트 목록에서 add your task 버튼을 클릭하면 모달을 통해 작업을 생성할 수 있다.
+- 작업은 삭제할 수 있고, 완료 표시를 할 수 있다.
+- 작업 생성시 작업 이름(title) / 세부 설명(description) / 기간(term) / 라벨(label)을 등록할 수 있다.
+- 프로젝트 목록에서 작업을 클릭하면 개별적인 작업 모달에서 작업에 대한 설명을 확인할 수 있다.
+- 작업 모달에서 edit 버튼을 클릭시 작업의 내용을 수정할 수 있다.
+
+### 4. 라벨(label)
+
+- 사용자는 작업마다 하나의 라벨을 붙일 수 있다.
+- 라벨을 컬러를 선택할 수 있고, 이미 사용했던 라벨은 autocomplete 기능을 통해 찾아서 사용할 수 있다.
+
+### 5. 댓글(activity)
+
+- 사용자는 작업의 진행 상황을 작업 페이지에서 댓글로 기록해 둘 수 있다. 
+- 댓글 등록시 등록 시간이 같이 기록된다. 등록한 댓글은 수정/삭제가 가능하다.
+
+### 6. 검색 기능(filter)
+
+- All Tasks / Incomplete Tasks / Completed Tasks로 완료 여부에 따른 필터 기능을 제공한다.
+- 검색 바에서 작업(task)의 이름으로 키워드 검색이 가능하다.
+- 라벨 검색 레이어에서 모든 라벨 목록을 확인할 수 있고 키워드로 라벨을 검색할 수 있다. 라벨 선택시 해당 라벨이 달린 태스크를 필터링한 화면을 제공한다.
+
+## 기술 스택 
+
+### Front-end
+
+- HTML templates, vanilla JS
+- axios
+- moment
+- [pikaday](https://github.com/dbushell/Pikaday) - data picker
+- UI Framework
+  + [bluma](https://bulma.io/)
+- bundler
+  + parcel [base by fds-midproject-teamplate](https://github.com/fds9/fds-midproject-template)
+### Back-end
+
+- Server & Database
+  + [fds-json-server](https://www.npmjs.com/package/fds-json-server)
+  + [glitch](https://glitch.com/)
+
+### Deploy 
+  + [netlify](https://www.netlify.com/)
+
+
+## 프로젝트 이슈 로그
+
 | 일자 | 수정/문제해결/목표 로그 |
 | :---: | --- |
 | 180528 | **[수정]** 프로젝트 인덱스 페이지에서 프로젝트 목록과 작업을 바로 삭제할 수 있도록 추가함<br>**[목표]** 삭제된 부분만 렌더링 되게 하고 싶은데 지금 짠 상태에서는 인덱스 페이지 전체를 다시 그리게 되어 좀더 함수 처리를 고민해봐야겠다. |
