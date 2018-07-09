@@ -52,22 +52,24 @@
 
 ### Front-end
 
-- HTML templates, vanilla JS
+- HTML templates, JavaSciprt(ES6), SCSS
 - axios
 - moment
-- [pikaday](https://github.com/dbushell/Pikaday) - data picker
-- UI Framework
+- [pikaday](https://github.com/dbushell/Pikaday) : data picker
+- CSS Framework
   + [bluma](https://bulma.io/)
 - bundler
   + parcel [base by fds-midproject-teamplate](https://github.com/fds9/fds-midproject-template)
+
 ### Back-end
 
 - Server & Database
   + [fds-json-server](https://www.npmjs.com/package/fds-json-server)
-  + [glitch](https://glitch.com/)
 
 ### Deploy 
-  + [netlify](https://www.netlify.com/)
+
+- [glitch](https://glitch.com/)를 통한 웹서버 배포
+- [netlify](https://www.netlify.com/)를 통한 웹사이트 배포
 
 
 ## 프로젝트 이슈 로그
